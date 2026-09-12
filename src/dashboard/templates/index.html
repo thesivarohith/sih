@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIH26123 SWARM MONITORING DASHBOARD</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0px !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        body {
+            background-color: #000000;
+            color: #cccccc;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 13px;
+            line-height: 1.3;
+            padding: 10px;
+        }
+
+        header {
+            border: 1px solid #444444;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #888888;
+            font-size: 11px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            grid-gap: 10px;
+        }
+
+        .left-pane, .right-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel {
+            border: 1px solid #444444;
+            padding: 8px;
+            background-color: #000000;
+        }
+
+        .panel-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffffff;
+            border-bottom: 1px solid #333333;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        canvas {
+            display: block;
+            background-color: #050505;
+            border: 1px solid #333333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th, td {
+            border: 1px solid #333333;
+            padding: 4px 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #111111;
+            color: #aaaaaa;
+            font-weight: normal;
+        }
+
+        td {
+            color: #cccccc;
+        }
+
+        .log-container {
+            height: 180px;
+            overflow-y: scroll;
+            border: 1px solid #333333;
+            padding: 4px;
+            background-color: #020202;
+            font-size: 11px;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid #1a1a1a;
+            padding: 2px 0;
+            color: #888888;
+        }
+
+        .status-idle { color: #888888; }
+        .status-halt { color: #ff5555; }
+        .status-proceed { color: #55ff55; }
+        .status-yield { color: #ffaa00; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SIH26123: EDGE-AI DECENTRALIZED AMR SWARM MONITORING DASHBOARD</h1>
+        <div class="subtitle">SYSTEM MODE: PASSIVE MONITOR (SUBSCRIBE ONLY) | INFRASTRUCTURE: ZENOH P2P</div>
+    </header>
+
+    <div class="grid-container">
+
+        <!-- LEFT PANE: WAREHOUSE CANVAS & SYSTEM STATUS -->
+        <div class="left-pane">
+            <div class="panel">
+                <div class="panel-title">15x15m Warehouse Floorplan Map</div>
+                <canvas id="mapCanvas" width="440" height="440"></canvas>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Canvas Legend</div>
+                <div>AMR 1: Square (Solid Gray)</div>
+                <div>AMR 2: Square (Hollow Outline)</div>
+                <div>AMR 3: Square (Crosshair)</div>
+                <div>Obstruction Zones: Hash Pattern</div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANE: TELEMETRY, CNP AUCTION LOGS & MISSION METRICS -->
+        <div class="right-pane">
+
+            <!-- REAL-TIME TELEMETRY TABLE -->
+            <div class="panel">
+                <div class="panel-title">Swarm Telemetry Overview</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Robot ID</th>
+                            <th>X (m)</th>
+                            <th>Y (m)</th>
+                            <th>Battery</th>
+                            <th>Wait (s)</th>
+                            <th>Halted</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="telemetryTableBody">
+                        <tr id="row-amr_1">
+                            <td>amr_1</td>
+                            <td id="amr_1-x">0.00</td>
+                            <td id="amr_1-y">0.00</td>
+                            <td id="amr_1-bat">100%</td>
+                            <td id="amr_1-wait">0.0s</td>
+                            <td id="amr_1-halt">NO</td>
+                            <td id="amr_1-status">IDLE</td>
+                        </tr>
+                        <tr id="row-amr_2">
+                            <td>amr_2</td>
+                            <td id="amr_2-x">0.00</td>
+                            <td id="amr_2-y">0.00</td>
+                            <td id="amr_2-bat">100%</td>
+                            <td id="amr_2-wait">0.0s</td>
+                            <td id="amr_2-halt">NO</td>
+                            <td id="amr_2-status">IDLE</td>
+                        </tr>
+                        <tr id="row-amr_3">
+                            <td>amr_3</td>
+                            <td id="amr_3-x">0.00</td>
+                            <td id="amr_3-y">0.00</td>
+                            <td id="amr_3-bat">100%</td>
+                            <td id="amr_3-wait">0.0s</td>
+                            <td id="amr_3-halt">NO</td>
+                            <td id="amr_3-status">IDLE</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TASK MANAGER & CNP AUCTION LOGS -->
+            <div class="panel">
+                <div class="panel-title">Contract Net Protocol (CNP) Auction Event Stream</div>
+                <div class="log-container" id="auctionLogContainer">
+                    <div class="log-entry">SYSTEM INIT: Listening on P2P topic swarm/tasks/auction...</div>
+                </div>
+            </div>
+
+            <!-- MISSION KPI METRICS -->
+            <div class="panel">
+                <div class="panel-title">Mission Execution KPI Metrics</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Robot</th>
+                            <th>Total Latency (s)</th>
+                            <th>Active Travel (s)</th>
+                            <th>Idle Wait (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metricsTableBody">
+                        <tr>
+                            <td colspan="5" style="color: #666666; text-align: center;">No completed mission records yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const socket = io();
+
+        // Warehouse Map Configuration
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        const WAREHOUSE_SIZE = 15.0; // 15x15 meters
+
+        // Robot positions dictionary
+        const robotPositions = {
+            'amr_1': { x: 7.5, y: 7.5, halted: false },
+            'amr_2': { x: 5.0, y: 7.5, halted: false },
+            'amr_3': { x: 10.0, y: 7.5, halted: false }
+        };
+
+        function metersToPixels(x, y) {
+            const px = (x / WAREHOUSE_SIZE) * canvas.width;
+            const py = canvas.height - ((y / WAREHOUSE_SIZE) * canvas.height);
+            return { px, py };
+        }
+
+        function drawWarehouse() {
+            // Background
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grid lines (1m intervals = 15 grid lines)
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 1;
+            const step = canvas.width / WAREHOUSE_SIZE;
+
+            for (let i = 0; i <= WAREHOUSE_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * step, 0);
+                ctx.lineTo(i * step, canvas.height);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, i * step);
+                ctx.lineTo(canvas.width, i * step);
+                ctx.stroke();
+            }
+
+            // Draw Outer Warehouse Boundary
+            ctx.strokeStyle = '#444444';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+
+            // Draw Racks / Obstacles
+            ctx.fillStyle = '#222222';
+            ctx.strokeStyle = '#444444';
+
+            // Top rack row
+            drawRack(2.0, 12.0, 4.0, 1.0);
+            drawRack(9.0, 12.0, 4.0, 1.0);
+
+            // Bottom rack row
+            drawRack(2.0, 3.0, 4.0, 1.0);
+            drawRack(9.0, 3.0, 4.0, 1.0);
+
+            // Draw Robots
+            drawRobot('amr_1', robotPositions['amr_1'], 'solid');
+            drawRobot('amr_2', robotPositions['amr_2'], 'outline');
+            drawRobot('amr_3', robotPositions['amr_3'], 'cross');
+        }
+
+        function drawRack(x, y, w, h) {
+            const p1 = metersToPixels(x, y + h);
+            const pw = (w / WAREHOUSE_SIZE) * canvas.width;
+            const ph = (h / WAREHOUSE_SIZE) * canvas.height;
+            ctx.fillRect(p1.px, p1.py, pw, ph);
+            ctx.strokeRect(p1.px, p1.py, pw, ph);
+        }
+
+        function drawRobot(id, pos, style) {
+            const p = metersToPixels(pos.x, pos.y);
+            const size = 16;
+
+            ctx.lineWidth = 2;
+            if (pos.halted) {
+                ctx.strokeStyle = '#ff5555';
+                ctx.fillStyle = '#aa2222';
+            } else {
+                ctx.strokeStyle = '#ffffff';
+                ctx.fillStyle = '#666666';
+            }
+
+            if (style === 'solid') {
+                ctx.fillRect(p.px - size/2, p.py - size/2, size, size);
+                ctx.strokeRect(p.px - size/2, p.py - size/2, size, size);
+            } else if (style === 'outline') {
+                ctx.fillStyle = '#050505';
+                ctx.fillRect(p.px - size/2, p.py - size/2, size, size);
+                ctx.strokeRect(p.px - size/2, p.py - size/2, size, size);
+            } else if (style === 'cross') {
+                ctx.fillStyle = '#050505';
+                ctx.fillRect(p.px - size/2, p.py - size/2, size, size);
+                ctx.strokeRect(p.px - size/2, p.py - size/2, size, size);
+
+                ctx.beginPath();
+                ctx.moveTo(p.px - size/2, p.py - size/2);
+                ctx.lineTo(p.px + size/2, p.py + size/2);
+                ctx.moveTo(p.px + size/2, p.py - size/2);
+                ctx.lineTo(p.px - size/2, p.py + size/2);
+                ctx.stroke();
+            }
+
+            // Robot Label Text
+            ctx.fillStyle = '#aaaaaa';
+            ctx.font = '10px "Courier New"';
+            ctx.fillText(id, p.px - 14, p.py - 12);
+        }
+
+        // SocketIO Handlers
+        socket.on('telemetry_update', function(data) {
+            const rid = data.robot_id;
+            if (!rid) return;
+
+            robotPositions[rid] = {
+                x: data.x || 0.0,
+                y: data.y || 0.0,
+                halted: data.is_halted || false
+            };
+
+            const xElem = document.getElementById(rid + '-x');
+            const yElem = document.getElementById(rid + '-y');
+            const batElem = document.getElementById(rid + '-bat');
+            const waitElem = document.getElementById(rid + '-wait');
+            const haltElem = document.getElementById(rid + '-halt');
+
+            if (xElem) xElem.innerText = (data.x || 0.0).toFixed(2);
+            if (yElem) yElem.innerText = (data.y || 0.0).toFixed(2);
+            if (batElem) batElem.innerText = (data.battery_pct || 100.0).toFixed(1) + '%';
+            if (waitElem) waitElem.innerText = (data.wait_duration_sec || 0.0).toFixed(1) + 's';
+            if (haltElem) {
+                haltElem.innerText = data.is_halted ? 'YES' : 'NO';
+                haltElem.className = data.is_halted ? 'status-halt' : '';
+            }
+
+            drawWarehouse();
+        });
+
+        socket.on('auction_update', function(data) {
+            const container = document.getElementById('auctionLogContainer');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+
+            const timeStr = new Date().toISOString().split('T')[1].slice(0, 8);
+            const msgType = data.msg_type || 'INFO';
+            const aucId = data.auction_id || '';
+            const sender = data.initiator_id || data.bidder_id || data.winner_id || 'SWARM';
+
+            entry.innerText = `[${timeStr}] [CNP:${msgType}] ${sender} -> ${aucId} ${JSON.stringify(data)}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        });
+
+        socket.on('metrics_update', function(data) {
+            const body = document.getElementById('metricsTableBody');
+            
+            // Clear empty message if present
+            if (body.children.length === 1 && body.children[0].children.length === 1) {
+                body.innerHTML = '';
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${data.task_id || 'N/A'}</td>
+                <td>${data.robot_id || 'N/A'}</td>
+                <td>${(data.order_to_delivery_latency_sec || 0).toFixed(2)}</td>
+                <td>${(data.active_travel_time_sec || 0).toFixed(2)}</td>
+                <td>${(data.idle_wait_time_sec || 0).toFixed(2)}</td>
+            `;
+            body.appendChild(row);
+        });
+
+        socket.on('task_status_update', function(data) {
+            const rid = data.robot_id;
+            const statusElem = document.getElementById(rid + '-status');
+            if (statusElem) {
+                statusElem.innerText = data.state || 'IDLE';
+            }
+        });
+
+        // Initial Canvas Draw
+        drawWarehouse();
+    </script>
+</body>
+</html>
