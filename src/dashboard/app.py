@@ -2,12 +2,13 @@
 """
 app.py — Passive Web Dashboard Backend (SIH26123)
 =============================================================================
-Flask-SocketIO server subscribing to ROS 2 swarm telemetry, CNP auctions,
+Flask server subscribing to ROS 2 swarm telemetry, CNP auctions,
 and mission metrics via a background rclpy thread.
 
-Read-only Architecture:
+Offline Architecture:
+  - Uses native Server-Sent Events (SSE) `/stream` + WebSocket/JSON endpoints
+    to eliminate all external CDN network dependencies.
   - Subscribes strictly to ROS 2 topics over P2P network.
-  - Emits JSON events directly to the HTML5 brutalist frontend via WebSockets.
   - Does NOT publish any commands back to robots to preserve decentralization.
 
 Topics Subscribed:
@@ -22,15 +23,34 @@ import os
 import sys
 import threading
 import time
-from typing import Dict, Any
+from typing import Dict, Any, List
 
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, Response, jsonify
+from flask_socketio import SocketIO
 
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from std_msgs.msg import String
+
+
+# Global In-Memory State Caches (Thread-safe reads for SSE stream)
+TELEMETRY_DATA: Dict[str, Dict[str, Any]] = {
+    "amr_1": {"robot_id": "amr_1", "x": 7.5, "y": 7.5, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
+    "amr_2": {"robot_id": "amr_2", "x": 5.0, "y": 7.5, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
+    "amr_3": {"robot_id": "amr_3", "x": 10.0, "y": 7.5, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
+}
+
+TASK_STATUS_DATA: Dict[str, str] = {
+    "amr_1": "IDLE",
+    "amr_2": "IDLE",
+    "amr_3": "IDLE",
+}
+
+METRICS_DATA: List[Dict[str, Any]] = []
+AUCTION_LOGS: List[Dict[str, Any]] = []
+
+state_lock = threading.Lock()
 
 
 # Initialize Flask App & SocketIO
@@ -42,14 +62,12 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 class DashboardSubscriberNode(Node):
     """
     ROS 2 Passive Subscriber Node.
-    Forwards received telemetry and mission metrics to SocketIO clients.
+    Forwards received telemetry and mission metrics to global state cache.
     """
 
     def __init__(self, socket_instance: SocketIO):
         super().__init__("dashboard_subscriber_node")
         self._socketio = socket_instance
-
-        # Known AMR Fleet IDs
         self._robot_ids = ["amr_1", "amr_2", "amr_3"]
 
         qos = QoSProfile(
@@ -96,44 +114,60 @@ class DashboardSubscriberNode(Node):
         self.get_logger().info("DashboardSubscriberNode listening on swarm telemetry & CNP topics")
 
     def _handle_telemetry(self, robot_id: str, msg: String):
-        """Relay telemetry payload to frontend."""
+        """Update telemetry cache and emit event."""
         try:
             data = json.loads(msg.data)
+            with state_lock:
+                TELEMETRY_DATA[robot_id] = data
             self._socketio.emit("telemetry_update", data)
         except json.JSONDecodeError as e:
             self.get_logger().error(f"Telemetry JSON decode error: {e}")
 
     def _handle_metrics(self, robot_id: str, msg: String):
-        """Relay mission KPI metrics payload to frontend."""
+        """Update metrics cache and emit event."""
         try:
             data = json.loads(msg.data)
+            with state_lock:
+                METRICS_DATA.append(data)
+                if len(METRICS_DATA) > 50:
+                    METRICS_DATA.pop(0)
             self._socketio.emit("metrics_update", data)
         except json.JSONDecodeError as e:
             self.get_logger().error(f"Metrics JSON decode error: {e}")
 
     def _handle_auction(self, msg: String):
-        """Relay CNP auction event to frontend."""
+        """Update auction logs cache and emit event."""
         try:
             data = json.loads(msg.data)
+            with state_lock:
+                AUCTION_LOGS.append(data)
+                if len(AUCTION_LOGS) > 50:
+                    AUCTION_LOGS.pop(0)
             self._socketio.emit("auction_update", data)
         except json.JSONDecodeError as e:
             self.get_logger().error(f"Auction JSON decode error: {e}")
 
     def _handle_task_status(self, msg: String):
-        """Relay task manager state update to frontend."""
+        """Update task status cache and emit event."""
         try:
             data = json.loads(msg.data)
+            rid = data.get("robot_id")
+            if rid:
+                with state_lock:
+                    TASK_STATUS_DATA[rid] = data.get("state", "IDLE")
             self._socketio.emit("task_status_update", data)
         except json.JSONDecodeError as e:
             self.get_logger().error(f"Task status JSON decode error: {e}")
 
 
 def _run_ros_thread(socket_instance: SocketIO):
-    """Background thread spinning ROS 2 executor."""
+    """Background thread spinning ROS 2 executor with non-blocking GIL releases."""
     rclpy.init()
     node = DashboardSubscriberNode(socket_instance)
     try:
-        rclpy.spin(node)
+        while rclpy.ok():
+            rclpy.spin_once(node, timeout_sec=0.05)
+            time.sleep(0.01)
     except Exception as e:
         print(f"[Dashboard ROS Thread] Exception: {e}", file=sys.stderr)
     finally:
@@ -147,8 +181,38 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/api/state")
+def get_state():
+    """REST endpoint returning full snapshot of current swarm state."""
+    with state_lock:
+        snapshot = {
+            "telemetry": TELEMETRY_DATA,
+            "task_status": TASK_STATUS_DATA,
+            "metrics": METRICS_DATA,
+            "auctions": AUCTION_LOGS,
+        }
+    return jsonify(snapshot)
+
+
+@app.route("/stream")
+def stream():
+    """Server-Sent Events (SSE) stream for zero-dependency real-time updates."""
+    def event_stream():
+        while True:
+            with state_lock:
+                payload = json.dumps({
+                    "telemetry": TELEMETRY_DATA,
+                    "task_status": TASK_STATUS_DATA,
+                    "metrics": METRICS_DATA,
+                    "auctions": AUCTION_LOGS,
+                })
+            yield f"data: {payload}\n\n"
+            time.sleep(0.2)  # 5 Hz stream update rate
+
+    return Response(event_stream(), mimetype="text/event-stream")
+
+
 if __name__ == "__main__":
-    # Start background ROS 2 subscriber thread
     ros_thread = threading.Thread(
         target=_run_ros_thread, args=(socketio,), daemon=True
     )

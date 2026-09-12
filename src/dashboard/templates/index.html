@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIH26123 SWARM MONITORING DASHBOARD</title>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -230,8 +229,6 @@
     </div>
 
     <script>
-        const socket = io();
-
         // Warehouse Map Configuration
         const canvas = document.getElementById('mapCanvas');
         const ctx = canvas.getContext('2d');
@@ -342,76 +339,99 @@
             ctx.fillText(id, p.px - 14, p.py - 12);
         }
 
-        // SocketIO Handlers
-        socket.on('telemetry_update', function(data) {
-            const rid = data.robot_id;
-            if (!rid) return;
+        function renderState(snapshot) {
+            if (!snapshot) return;
 
-            robotPositions[rid] = {
-                x: data.x || 0.0,
-                y: data.y || 0.0,
-                halted: data.is_halted || false
-            };
+            // 1. Update Telemetry
+            const telemetry = snapshot.telemetry || {};
+            for (const rid in telemetry) {
+                const data = telemetry[rid];
+                robotPositions[rid] = {
+                    x: data.x || 0.0,
+                    y: data.y || 0.0,
+                    halted: data.is_halted || false
+                };
 
-            const xElem = document.getElementById(rid + '-x');
-            const yElem = document.getElementById(rid + '-y');
-            const batElem = document.getElementById(rid + '-bat');
-            const waitElem = document.getElementById(rid + '-wait');
-            const haltElem = document.getElementById(rid + '-halt');
+                const xElem = document.getElementById(rid + '-x');
+                const yElem = document.getElementById(rid + '-y');
+                const batElem = document.getElementById(rid + '-bat');
+                const waitElem = document.getElementById(rid + '-wait');
+                const haltElem = document.getElementById(rid + '-halt');
 
-            if (xElem) xElem.innerText = (data.x || 0.0).toFixed(2);
-            if (yElem) yElem.innerText = (data.y || 0.0).toFixed(2);
-            if (batElem) batElem.innerText = (data.battery_pct || 100.0).toFixed(1) + '%';
-            if (waitElem) waitElem.innerText = (data.wait_duration_sec || 0.0).toFixed(1) + 's';
-            if (haltElem) {
-                haltElem.innerText = data.is_halted ? 'YES' : 'NO';
-                haltElem.className = data.is_halted ? 'status-halt' : '';
+                if (xElem) xElem.innerText = (data.x || 0.0).toFixed(2);
+                if (yElem) yElem.innerText = (data.y || 0.0).toFixed(2);
+                if (batElem) batElem.innerText = (data.battery_pct || 100.0).toFixed(1) + '%';
+                if (waitElem) waitElem.innerText = (data.wait_duration_sec || 0.0).toFixed(1) + 's';
+                if (haltElem) {
+                    haltElem.innerText = data.is_halted ? 'YES' : 'NO';
+                    haltElem.className = data.is_halted ? 'status-halt' : '';
+                }
+            }
+
+            // 2. Update Task Status
+            const taskStatus = snapshot.task_status || {};
+            for (const rid in taskStatus) {
+                const statusElem = document.getElementById(rid + '-status');
+                if (statusElem) {
+                    statusElem.innerText = taskStatus[rid] || 'IDLE';
+                }
+            }
+
+            // 3. Update Auction Logs
+            const auctions = snapshot.auctions || [];
+            const container = document.getElementById('auctionLogContainer');
+            if (auctions.length > 0) {
+                container.innerHTML = '';
+                auctions.forEach(data => {
+                    const entry = document.createElement('div');
+                    entry.className = 'log-entry';
+                    const timeStr = new Date().toISOString().split('T')[1].slice(0, 8);
+                    const msgType = data.msg_type || 'INFO';
+                    const aucId = data.auction_id || '';
+                    const sender = data.initiator_id || data.bidder_id || data.winner_id || 'SWARM';
+                    entry.innerText = `[${timeStr}] [CNP:${msgType}] ${sender} -> ${aucId} ${JSON.stringify(data)}`;
+                    container.appendChild(entry);
+                });
+                container.scrollTop = container.scrollHeight;
+            }
+
+            // 4. Update Mission Metrics
+            const metrics = snapshot.metrics || [];
+            const body = document.getElementById('metricsTableBody');
+            if (metrics.length > 0) {
+                body.innerHTML = '';
+                metrics.forEach(data => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.task_id || 'N/A'}</td>
+                        <td>${data.robot_id || 'N/A'}</td>
+                        <td>${(data.order_to_delivery_latency_sec || 0).toFixed(2)}</td>
+                        <td>${(data.active_travel_time_sec || 0).toFixed(2)}</td>
+                        <td>${(data.idle_wait_time_sec || 0).toFixed(2)}</td>
+                    `;
+                    body.appendChild(row);
+                });
             }
 
             drawWarehouse();
-        });
+        }
 
-        socket.on('auction_update', function(data) {
-            const container = document.getElementById('auctionLogContainer');
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-
-            const timeStr = new Date().toISOString().split('T')[1].slice(0, 8);
-            const msgType = data.msg_type || 'INFO';
-            const aucId = data.auction_id || '';
-            const sender = data.initiator_id || data.bidder_id || data.winner_id || 'SWARM';
-
-            entry.innerText = `[${timeStr}] [CNP:${msgType}] ${sender} -> ${aucId} ${JSON.stringify(data)}`;
-            container.appendChild(entry);
-            container.scrollTop = container.scrollHeight;
-        });
-
-        socket.on('metrics_update', function(data) {
-            const body = document.getElementById('metricsTableBody');
-            
-            // Clear empty message if present
-            if (body.children.length === 1 && body.children[0].children.length === 1) {
-                body.innerHTML = '';
+        // Connect via Native HTML5 Server-Sent Events (SSE) — 100% Offline Compatible
+        const evtSource = new EventSource("/stream");
+        evtSource.onmessage = function(event) {
+            try {
+                const snapshot = JSON.parse(event.data);
+                renderState(snapshot);
+            } catch (err) {
+                console.error("Failed to parse SSE event payload:", err);
             }
+        };
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${data.task_id || 'N/A'}</td>
-                <td>${data.robot_id || 'N/A'}</td>
-                <td>${(data.order_to_delivery_latency_sec || 0).toFixed(2)}</td>
-                <td>${(data.active_travel_time_sec || 0).toFixed(2)}</td>
-                <td>${(data.idle_wait_time_sec || 0).toFixed(2)}</td>
-            `;
-            body.appendChild(row);
-        });
-
-        socket.on('task_status_update', function(data) {
-            const rid = data.robot_id;
-            const statusElem = document.getElementById(rid + '-status');
-            if (statusElem) {
-                statusElem.innerText = data.state || 'IDLE';
-            }
-        });
+        // Fallback Initial State Fetch via REST API
+        fetch('/api/state')
+            .then(res => res.json())
+            .then(data => renderState(data))
+            .catch(err => console.log('API initial fetch error:', err));
 
         // Initial Canvas Draw
         drawWarehouse();
