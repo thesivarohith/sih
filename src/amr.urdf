@@ -1,0 +1,180 @@
+<?xml version="1.0" ?>
+<robot name="edge_amr">
+
+  <!-- ===================== Base Chassis ===================== -->
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.5 0.4 0.2"/></geometry>
+      <material name="blue"><color rgba="0.1 0.3 0.8 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.5 0.4 0.2"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="10.0"/>
+      <inertia ixx="0.16" ixy="0" ixz="0" iyy="0.24" iyz="0" izz="0.34"/>
+    </inertial>
+  </link>
+
+  <!-- ===================== Left Wheel ===================== -->
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder radius="0.1" length="0.05"/></geometry>
+      <material name="dark_rubber"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.1" length="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.00271" ixy="0" ixz="0" iyy="0.00271" iyz="0" izz="0.005"/>
+    </inertial>
+  </link>
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0 0.225 -0.1" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ===================== Right Wheel ===================== -->
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder radius="0.1" length="0.05"/></geometry>
+      <material name="dark_rubber"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.1" length="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.00271" ixy="0" ixz="0" iyy="0.00271" iyz="0" izz="0.005"/>
+    </inertial>
+  </link>
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.225 -0.1" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ===================== Rear Caster ===================== -->
+  <link name="caster_link">
+    <visual>
+      <geometry><sphere radius="0.05"/></geometry>
+      <material name="grey"><color rgba="0.4 0.4 0.4 1"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.05"/></geometry>
+      <surface>
+        <friction>
+          <ode><mu>0.0</mu><mu2>0.0</mu2></ode>
+        </friction>
+      </surface>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+    </inertial>
+  </link>
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_link"/>
+    <origin xyz="-0.2 0 -0.15" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================== LiDAR Sensor Link ===================== -->
+  <link name="lidar_link">
+    <visual>
+      <geometry><cylinder radius="0.05" length="0.05"/></geometry>
+      <material name="black"><color rgba="0 0 0 1"/></material>
+    </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.00004" ixy="0" ixz="0" iyy="0.00004" iyz="0" izz="0.0000625"/>
+    </inertial>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.2 0 0.125" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================== YOLOv8n Camera Link ===================== -->
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="0.02 0.05 0.05"/></geometry>
+      <material name="red"><color rgba="0.8 0.1 0.1 1"/></material>
+    </visual>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.0000021" ixy="0" ixz="0" iyy="0.0000012" iyz="0" izz="0.0000021"/>
+    </inertial>
+  </link>
+  <joint name="camera_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.26 0 0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0" upper="0" effort="0" velocity="0"/>
+  </joint>
+
+  <!-- ===================== Gazebo Plugins ===================== -->
+
+  <!-- Diff-Drive Controller -->
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.45</wheel_separation>
+      <wheel_radius>0.1</wheel_radius>
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <topic>cmd_vel</topic>
+    </plugin>
+  </gazebo>
+
+  <!-- LiDAR Sensor -->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <topic>scan</topic>
+      <update_rate>10</update_rate>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.2</min>
+          <max>10.0</max>
+        </range>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- YOLOv8n Camera Sensor (Throttled for Edge Performance) -->
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="camera">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <topic>camera/image_raw</topic>
+      <update_rate>5</update_rate>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>320</width>
+          <height>240</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>15.0</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
+
+</robot>
