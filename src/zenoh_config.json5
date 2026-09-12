@@ -1,0 +1,76 @@
+{
+  // =======================================================================
+  // Zenoh Session Config — Pure P2P for SIH26123 (rmw_zenoh_cpp)
+  // =======================================================================
+  //
+  // This config puts every ROS 2 node into Zenoh "peer" mode.
+  // No central Zenoh router is required. All nodes discover each
+  // other via UDP multicast on the loopback/LAN interface.
+  //
+  // Environment:
+  //   export ZENOH_SESSION_CONFIG_URI=/home/siva/mustang/src/zenoh_config.json5
+  //   export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+  //
+  // Reference: https://zenoh.io/docs/manual/configuration/
+
+  // ---- Session mode: "peer" (no broker/router dependency) ----
+  mode: "peer",
+
+  // ---- Transport configuration ----
+  transport: {
+    unicast: {
+      // Shared-memory transport for zero-copy on a single machine.
+      // Dramatically reduces latency for image topics between
+      // namespaced nodes on the same laptop.
+      lowlatency: true,
+    },
+    shared_memory: {
+      enabled: true,
+    },
+  },
+
+  // ---- Scouting: how peers discover each other ----
+  scouting: {
+    // Multicast scouting — peers announce themselves on a well-known
+    // multicast group. All nodes on the same subnet (or loopback)
+    // will find each other within ~1 second.
+    multicast: {
+      enabled: true,
+      address: "224.0.0.224:7446",
+      interface: "auto",
+      // Only discover other peers (not routers or clients)
+      autoconnect: {
+        peer: "true",
+      },
+    },
+    // Gossip scouting — once two peers connect, they share knowledge
+    // of other peers they know about. Accelerates full-mesh formation.
+    gossip: {
+      enabled: true,
+      multihop: false,
+      autoconnect: {
+        peer: "true",
+      },
+    },
+  },
+
+  // ---- No static endpoints to connect to (pure discovery) ----
+  connect: {
+    endpoints: [],
+  },
+
+  // ---- Listen on all available interfaces ----
+  listen: {
+    endpoints: [
+      "udp/0.0.0.0:0",
+      "tcp/0.0.0.0:0",
+    ],
+  },
+
+  // ---- Timestamping (needed for telemetry ordering) ----
+  timestamping: {
+    enabled: {
+      peer: true,
+    },
+  },
+}
