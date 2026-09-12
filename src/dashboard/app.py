@@ -154,5 +154,5 @@ if __name__ == "__main__":
     )
     ros_thread.start()
 
-    print("[Dashboard] Starting Flask-SocketIO server on http://0.0.0.0:5000")
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)
+    print("[Dashboard] Starting Flask-SocketIO server on http://0.0.0.0:5050")
+    socketio.run(app, host="0.0.0.0", port=5050, debug=False, allow_unsafe_werkzeug=True)
