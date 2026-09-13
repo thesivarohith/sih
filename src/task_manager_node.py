@@ -34,8 +34,9 @@ Topics:
 import json
 import math
 import hashlib
+import heapq
 import time as _time
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Tuple
 
 import rclpy
 from rclpy.node import Node
@@ -43,6 +44,119 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPo
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
+
+
+class AStarPlanner:
+    """
+    Lightweight 2D Grid A* Pathfinding Planner for 15x15m SIH Warehouse Map.
+    Grid resolution: 0.5 meters (30x30 cells).
+    Includes obstacle bounding box definitions for warehouse racks & trap zone.
+    """
+    def __init__(self, resolution: float = 0.5, map_size: float = 15.0):
+        self.res = resolution
+        self.size = map_size
+        self.grid_dim = int(map_size / resolution)
+
+        # Hardcoded rack obstacle bounding boxes [xmin, xmax, ymin, ymax]
+        # (Includes inflation margin for AMR footprint)
+        self.obstacles = [
+            # Row A Yellow Racks (y=10.0, x:[0.5..2.5, 3.5..5.5, 6.5..8.5, 9.5..11.5], y:[8.0..12.0])
+            [0.1, 2.9, 7.6, 12.4],
+            [3.1, 5.9, 7.6, 12.4],
+            [6.1, 8.9, 7.6, 12.4],
+            [9.1, 11.9, 7.6, 12.4],
+            
+            # Row B Blue Racks (y=5.0, x:[0.5..2.5, 3.5..5.5, 6.5..8.5, 9.5..11.5], y:[3.0..7.0])
+            [0.1, 2.9, 2.6, 7.4],
+            [3.1, 5.9, 2.6, 7.4],
+            [6.1, 8.9, 2.6, 7.4],
+            [9.1, 11.9, 2.6, 7.4],
+
+            # Dead-End Trap Zone (pose 13.5 10.0, size 3x4 -> x:[12.0..15.0], y:[8.0..12.0])
+            [11.6, 15.0, 7.6, 12.4]
+        ]
+
+    def _to_grid(self, x: float, y: float) -> Tuple[int, int]:
+        gx = max(0, min(self.grid_dim - 1, int(x / self.res)))
+        gy = max(0, min(self.grid_dim - 1, int(y / self.res)))
+        return (gx, gy)
+
+    def _to_world(self, gx: int, gy: int) -> Tuple[float, float]:
+        wx = (gx + 0.5) * self.res
+        wy = (gy + 0.5) * self.res
+        return (wx, wy)
+
+    def is_obstacle(self, gx: int, gy: int) -> bool:
+        wx, wy = self._to_world(gx, gy)
+        if wx < 0.4 or wx > (self.size - 0.4) or wy < 0.4 or wy > (self.size - 0.4):
+            return True
+        for ob in self.obstacles:
+            if ob[0] <= wx <= ob[1] and ob[2] <= wy <= ob[3]:
+                return True
+        return False
+
+    def plan(self, start_pos: Tuple[float, float], goal_pos: Tuple[float, float]) -> List[Tuple[float, float]]:
+        start_g = self._to_grid(start_pos[0], start_pos[1])
+        goal_g = self._to_grid(goal_pos[0], goal_pos[1])
+
+        if start_g == goal_g:
+            return [goal_pos]
+
+        open_set = []
+        heapq.heappush(open_set, (0.0, 0.0, start_g))
+        came_from = {}
+        g_score = {start_g: 0.0}
+
+        def heuristic(a, b):
+            dx = abs(a[0] - b[0])
+            dy = abs(a[1] - b[1])
+            return math.sqrt(dx * dx + dy * dy)
+
+        moves = [
+            (1, 0, 1.0), (-1, 0, 1.0), (0, 1, 1.0), (0, -1, 1.0),
+            (1, 1, 1.414), (1, -1, 1.414), (-1, 1, 1.414), (-1, -1, 1.414)
+        ]
+
+        closest_node = start_g
+        closest_dist = heuristic(start_g, goal_g)
+
+        while open_set:
+            _, current_g, current = heapq.heappop(open_set)
+
+            if current == goal_g:
+                closest_node = goal_g
+                break
+
+            h_dist = heuristic(current, goal_g)
+            if h_dist < closest_dist:
+                closest_dist = h_dist
+                closest_node = current
+
+            for dx, dy, cost in moves:
+                neighbor = (current[0] + dx, current[1] + dy)
+                if not (0 <= neighbor[0] < self.grid_dim and 0 <= neighbor[1] < self.grid_dim):
+                    continue
+                if self.is_obstacle(neighbor[0], neighbor[1]) and neighbor != goal_g:
+                    continue
+
+                tentative_g = current_g + cost
+                if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                    g_score[neighbor] = tentative_g
+                    f_score = tentative_g + heuristic(neighbor, goal_g)
+                    came_from[neighbor] = current
+                    heapq.heappush(open_set, (f_score, tentative_g, neighbor))
+
+        path_grid = []
+        curr = closest_node
+        while curr in came_from:
+            path_grid.append(curr)
+            curr = came_from[curr]
+        path_grid.append(start_g)
+        path_grid.reverse()
+
+        waypoints = [self._to_world(gx, gy) for gx, gy in path_grid]
+        waypoints.append(goal_pos)
+        return waypoints
 
 
 class TaskManagerNode(Node):
@@ -75,6 +189,8 @@ class TaskManagerNode(Node):
         # States: IDLE, CLAIMED, EN_ROUTE_PICKUP, DELIVERING, COMPLETED, HANDOFF
         self._state: str = "IDLE"
         self._current_task: Optional[Dict[str, Any]] = None
+        self._planner = AStarPlanner(resolution=0.5, map_size=15.0)
+        self._waypoints: List[Tuple[float, float]] = []
 
         # Position tracking from Odom
         self._pos_x: float = 0.0
@@ -324,27 +440,38 @@ class TaskManagerNode(Node):
             pass
 
         elif self._state == "CLAIMED":
-            # Transition to EN_ROUTE_PICKUP
-            self.get_logger().info(f"[{self._robot_id}] Moving to pickup for task '{self._current_task.get('task_id')}'")
+            pickup = self._current_task.get("pickup", [self._pos_x, self._pos_y])
+            self.get_logger().info(
+                f"[{self._robot_id}] Planning A* path to pickup {pickup} for '{self._current_task.get('task_id')}'"
+            )
+            self._waypoints = self._planner.plan((self._pos_x, self._pos_y), (pickup[0], pickup[1]))
             self._state = "EN_ROUTE_PICKUP"
 
         elif self._state == "EN_ROUTE_PICKUP":
-            pickup = self._current_task.get("pickup", [self._pos_x, self._pos_y])
-            arrived = self._navigate_towards(pickup[0], pickup[1])
-            if arrived:
+            if not self._waypoints:
                 self.get_logger().info(
-                    f"[{self._robot_id}] Pickup reached for '{self._current_task.get('task_id')}'. Transitioning to DELIVERING."
+                    f"[{self._robot_id}] Pickup reached for '{self._current_task.get('task_id')}'. Planning A* path to dropoff..."
                 )
+                dropoff = self._current_task.get("dropoff", [self._pos_x, self._pos_y])
+                self._waypoints = self._planner.plan((self._pos_x, self._pos_y), (dropoff[0], dropoff[1]))
                 self._state = "DELIVERING"
+            else:
+                target_wp = self._waypoints[0]
+                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1])
+                if arrived_wp:
+                    self._waypoints.pop(0)
 
         elif self._state == "DELIVERING":
-            dropoff = self._current_task.get("dropoff", [self._pos_x, self._pos_y])
-            arrived = self._navigate_towards(dropoff[0], dropoff[1])
-            if arrived:
+            if not self._waypoints:
                 self.get_logger().info(
                     f"[{self._robot_id}] Dropoff reached for '{self._current_task.get('task_id')}'. Task COMPLETED!"
                 )
                 self._complete_task()
+            else:
+                target_wp = self._waypoints[0]
+                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1])
+                if arrived_wp:
+                    self._waypoints.pop(0)
 
         elif self._state == "HANDOFF":
             # Stopping motors during handoff
