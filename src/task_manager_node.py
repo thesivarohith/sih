@@ -146,9 +146,15 @@ class TaskManagerNode(Node):
     # ===================================================================
 
     def _odom_cb(self, msg: Odometry):
-        """Extract x, y position from odometry."""
+        """Extract x, y position and yaw orientation from odometry."""
         self._pos_x = msg.pose.pose.position.x
         self._pos_y = msg.pose.pose.position.y
+
+        # Extract yaw angle from orientation quaternion (z-axis rotation)
+        q = msg.pose.pose.orientation
+        siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
+        cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+        self._current_yaw = math.atan2(siny_cosp, cosy_cosp)
 
     def _cmd_vel_monitor_cb(self, msg: Twist):
         """Monitor velocity commands to differentiate active travel vs idle wait time."""
