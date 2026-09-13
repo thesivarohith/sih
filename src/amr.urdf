@@ -83,7 +83,7 @@
     <origin xyz="-0.2 0 -0.15" rpy="0 0 0"/>
   </joint>
 
-  <!-- ===================== Front Caster (Balances Camera Level) ===================== -->
+  <!-- ===================== Front Caster (Prevents Pitching) ===================== -->
   <link name="front_caster_link">
     <visual>
       <geometry><sphere radius="0.05"/></geometry>
@@ -107,19 +107,6 @@
     <child link="front_caster_link"/>
     <origin xyz="0.2 0 -0.15" rpy="0 0 0"/>
   </joint>
-
-  <gazebo reference="caster_link">
-    <mu1>0.0</mu1>
-    <mu2>0.0</mu2>
-    <kp>1000000.0</kp>
-    <kd>1.0</kd>
-  </gazebo>
-  <gazebo reference="front_caster_link">
-    <mu1>0.0</mu1>
-    <mu2>0.0</mu2>
-    <kp>1000000.0</kp>
-    <kd>1.0</kd>
-  </gazebo>
 
   <!-- ===================== LiDAR Sensor Link ===================== -->
   <link name="lidar_link">
@@ -217,6 +204,18 @@
         </clip>
       </camera>
     </sensor>
+  </gazebo>
+
+  <!-- Caster Friction Parameters -->
+  <gazebo reference="caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="front_caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
 </robot>

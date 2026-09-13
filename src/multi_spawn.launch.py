@@ -21,7 +21,6 @@ from launch.actions import (
     IncludeLaunchDescription,
     GroupAction,
     LogInfo,
-    TimerAction,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
@@ -166,7 +165,6 @@ def generate_launch_description():
         fleet_actions.append(group)
 
     # ------------------------------------------------------------------
-    # 3. Assemble full launch description (with 3s timer for GZ world init)
+    # 3. Assemble full launch description
     # ------------------------------------------------------------------
-    delayed_fleet = TimerAction(period=3.0, actions=fleet_actions)
-    return LaunchDescription([gazebo_sim, delayed_fleet])
+    return LaunchDescription([gazebo_sim] + fleet_actions)
