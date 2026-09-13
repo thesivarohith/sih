@@ -41,6 +41,7 @@ from typing import Dict, Any, Optional, List, Tuple
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
+from sensor_msgs.msg import LaserScan, Image
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
@@ -204,6 +205,12 @@ class TaskManagerNode(Node):
         self._idle_wait_time_sec: float = 0.0
         self._last_state_tick_time: float = _time.monotonic()
 
+        # Step 4: Real-time LiDAR Safety & Step 5: Peer Space-Time Telemetry
+        self._lidar_obstacle_detected: bool = False
+        self._battery_level: float = 100.0
+        self._peer_telemetry: Dict[str, Dict[str, Any]] = {}
+        self._yield_until_time: float = 0.0
+
         # Claim resolution state
         self._pending_claim_task_id: Optional[str] = None
         self._claims_received: Dict[str, Dict[str, Any]] = {}
@@ -243,8 +250,19 @@ class TaskManagerNode(Node):
 
         # Sensor & Status Subscriptions
         self._sub_odom = self.create_subscription(Odometry, f"/{self._robot_id}/odom", self._odom_cb, odom_qos)
+        self._sub_scan = self.create_subscription(LaserScan, f"/{self._robot_id}/scan", self._scan_cb, odom_qos)
         self._sub_cmd_vel = self.create_subscription(Twist, f"/{self._robot_id}/cmd_vel", self._cmd_vel_monitor_cb, odom_qos)
         self._sub_obstruction = self.create_subscription(String, f"/{self._robot_id}/obstruction_status", self._obstruction_cb, pool_qos)
+
+        # Global P2P Telemetry Channel
+        self._pub_telemetry = self.create_publisher(String, f"swarm/{self._robot_id}/telemetry", pool_qos)
+        for pid in self._peer_ids:
+            self.create_subscription(
+                String,
+                f"swarm/{pid}/telemetry",
+                lambda msg, peer=pid: self._peer_telemetry_cb(msg, peer),
+                pool_qos
+            )
 
         # ---------------------------------------------------------------
         # Main Execution Loop Timer (10 Hz for navigation & state machine)
@@ -277,6 +295,41 @@ class TaskManagerNode(Node):
         linear_vel = abs(msg.linear.x) + abs(msg.linear.y)
         angular_vel = abs(msg.angular.z)
         self._is_moving = (linear_vel > 0.01 or angular_vel > 0.01)
+
+    def _scan_cb(self, msg: LaserScan):
+        """
+        Step 4: Real-Time LiDAR Front-Sector Safety Braking.
+        Evaluates 360-degree laser range data in the front 60-degree cone [-30 deg, +30 deg].
+        If any range reading is < 0.6m, sets _lidar_obstacle_detected = True.
+        """
+        if not msg.ranges:
+            self._lidar_obstacle_detected = False
+            return
+
+        num_samples = len(msg.ranges)
+        sector_span = max(1, int(num_samples * (60.0 / 360.0)))
+        half_span = sector_span // 2
+
+        front_indices = list(range(0, half_span)) + list(range(num_samples - half_span, num_samples))
+        min_dist = 999.0
+        for idx in front_indices:
+            if idx < len(msg.ranges):
+                r = msg.ranges[idx]
+                if msg.range_min <= r <= msg.range_max:
+                    if r < min_dist:
+                        min_dist = r
+
+        self._lidar_obstacle_detected = (min_dist < 0.6)
+
+    def _peer_telemetry_cb(self, msg: String, peer_id: str):
+        """
+        Step 5: Process P2P space-time telemetry broadcast from peer AMRs.
+        """
+        try:
+            data = json.loads(msg.data)
+            self._peer_telemetry[peer_id] = data
+        except Exception:
+            pass
 
     def _obstruction_cb(self, msg: String):
         """
@@ -478,7 +531,7 @@ class TaskManagerNode(Node):
             self._stop_motors()
 
     def _navigate_towards(self, target_x: float, target_y: float) -> bool:
-        """Simple proportional velocity control towards target waypoint."""
+        """Simple proportional velocity control towards target waypoint with LiDAR braking & Priority Aging."""
         dx = target_x - self._pos_x
         dy = target_y - self._pos_y
         dist = math.sqrt(dx * dx + dy * dy)
@@ -487,10 +540,39 @@ class TaskManagerNode(Node):
             self._stop_motors()
             return True
 
+        # Step 4: Real-time LiDAR Safety Brake
+        if self._lidar_obstacle_detected:
+            self._stop_motors()
+            return False
+
+        # Step 5: Inter-AMR Space-Time Conflict Resolution & Priority Aging Yield
+        if _time.time() < self._yield_until_time:
+            self._stop_motors()
+            return False
+
+        for peer_id, peer_data in self._peer_telemetry.items():
+            ppos = peer_data.get("pos", [999.0, 999.0])
+            pdist = math.sqrt((ppos[0] - self._pos_x)**2 + (ppos[1] - self._pos_y)**2)
+            if pdist < 0.9 and peer_data.get("is_moving", False):
+                # Calculate Priority Aging score
+                self_score = (10.0 * self._idle_wait_time_sec) + self._battery_level
+                peer_wait = peer_data.get("idle_wait_sec", 0.0)
+                peer_batt = peer_data.get("battery_pct", 100.0)
+                peer_score = (10.0 * peer_wait) + peer_batt
+
+                if self_score < peer_score:
+                    # Yield right of way with random jitter delay (10-200ms)
+                    jitter = (hash(self._robot_id + str(_time.time())) % 190 + 10) / 1000.0
+                    self._yield_until_time = _time.time() + 0.5 + jitter
+                    self.get_logger().info(
+                        f"[{self._robot_id}] Space-Time conflict with {peer_id}! Yielding right-of-way ({jitter*1000:.0f}ms jitter)."
+                    )
+                    self._stop_motors()
+                    return False
+
         # Calculate steering angle towards waypoint
         target_yaw = math.atan2(dy, dx)
         yaw_err = target_yaw - self._current_yaw
-        # Normalize angle error to [-pi, pi]
         yaw_err = math.atan2(math.sin(yaw_err), math.cos(yaw_err))
 
         cmd = Twist()
@@ -592,17 +674,23 @@ class TaskManagerNode(Node):
     # ===================================================================
 
     def _publish_status(self):
-        """Broadcast state machine status for visual monitoring dashboards."""
+        """Broadcast state machine status & P2P telemetry for monitoring & peer space-time checks."""
         status_payload = {
             "robot_id": self._robot_id,
             "state": self._state,
             "current_task": self._current_task.get("task_id") if self._current_task else None,
             "pos": [round(self._pos_x, 2), round(self._pos_y, 2)],
+            "yaw": round(self._current_yaw, 3),
+            "is_moving": self._is_moving,
+            "idle_wait_sec": round(self._idle_wait_time_sec, 2),
+            "battery_pct": round(self._battery_level, 1),
+            "waypoints": [list(w) for w in self._waypoints[:5]],
             "timestamp": _time.time()
         }
         msg = String()
         msg.data = json.dumps(status_payload)
         self._pub_status.publish(msg)
+        self._pub_telemetry.publish(msg)
 
 
 # =======================================================================
