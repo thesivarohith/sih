@@ -83,6 +83,44 @@
     <origin xyz="-0.2 0 -0.15" rpy="0 0 0"/>
   </joint>
 
+  <!-- ===================== Front Caster (Balances Camera Level) ===================== -->
+  <link name="front_caster_link">
+    <visual>
+      <geometry><sphere radius="0.05"/></geometry>
+      <material name="grey"><color rgba="0.4 0.4 0.4 1"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.05"/></geometry>
+      <surface>
+        <friction>
+          <ode><mu>0.0</mu><mu2>0.0</mu2></ode>
+        </friction>
+      </surface>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+    </inertial>
+  </link>
+  <joint name="front_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster_link"/>
+    <origin xyz="0.2 0 -0.15" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+  </gazebo>
+  <gazebo reference="front_caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+  </gazebo>
+
   <!-- ===================== LiDAR Sensor Link ===================== -->
   <link name="lidar_link">
     <visual>
