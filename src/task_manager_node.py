@@ -123,12 +123,12 @@ class TaskManagerNode(Node):
         self._pub_status = self.create_publisher(String, "/task_manager_status", pool_qos)
 
         # Motor velocity publisher
-        self._pub_cmd_vel = self.create_publisher(Twist, "/cmd_vel", pool_qos)
+        self._pub_cmd_vel = self.create_publisher(Twist, f"/{self._robot_id}/cmd_vel", pool_qos)
 
         # Sensor & Status Subscriptions
-        self._sub_odom = self.create_subscription(Odometry, "/odom", self._odom_cb, odom_qos)
-        self._sub_cmd_vel = self.create_subscription(Twist, "/cmd_vel", self._cmd_vel_monitor_cb, odom_qos)
-        self._sub_obstruction = self.create_subscription(String, "/amr/obstruction_status", self._obstruction_cb, pool_qos)
+        self._sub_odom = self.create_subscription(Odometry, f"/{self._robot_id}/odom", self._odom_cb, odom_qos)
+        self._sub_cmd_vel = self.create_subscription(Twist, f"/{self._robot_id}/cmd_vel", self._cmd_vel_monitor_cb, odom_qos)
+        self._sub_obstruction = self.create_subscription(String, f"/{self._robot_id}/obstruction_status", self._obstruction_cb, pool_qos)
 
         # ---------------------------------------------------------------
         # Main Execution Loop Timer (10 Hz for navigation & state machine)
