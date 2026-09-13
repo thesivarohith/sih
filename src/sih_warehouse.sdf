@@ -261,9 +261,9 @@
       <static>true</static>
       <pose>13.5 10.0 0.75 0 0 0</pose>
       <link name="link">
-        <collision name="col"><geometry><box><size>3 4 1.5</size></box></geometry></collision>
+        <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
-          <geometry><box><size>3 4 1.5</size></box></geometry>
+          <geometry><box><size>2 4 1.5</size></box></geometry>
           <material>
             <ambient>0.55 0.12 0.10 1</ambient>
             <diffuse>0.70 0.15 0.12 1</diffuse>

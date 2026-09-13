@@ -58,22 +58,22 @@ class AStarPlanner:
         self.grid_dim = int(map_size / resolution)
 
         # Hardcoded rack obstacle bounding boxes [xmin, xmax, ymin, ymax]
-        # (Includes inflation margin for AMR footprint)
+        # (Includes 0.2m inflation margin for AMR footprint)
         self.obstacles = [
-            # Row A Yellow Racks (y=10.0, x:[0.5..2.5, 3.5..5.5, 6.5..8.5, 9.5..11.5], y:[8.0..12.0])
-            [0.1, 2.9, 7.6, 12.4],
-            [3.1, 5.9, 7.6, 12.4],
-            [6.1, 8.9, 7.6, 12.4],
-            [9.1, 11.9, 7.6, 12.4],
+            # Row A Yellow Racks (y=10.0, pose: 1.5, 4.5, 7.5, 10.5)
+            [0.3, 2.7, 7.8, 12.2],
+            [3.3, 5.7, 7.8, 12.2],
+            [6.3, 8.7, 7.8, 12.2],
+            [9.3, 11.7, 7.8, 12.2],
             
-            # Row B Blue Racks (y=5.0, x:[0.5..2.5, 3.5..5.5, 6.5..8.5, 9.5..11.5], y:[3.0..7.0])
-            [0.1, 2.9, 2.6, 7.4],
-            [3.1, 5.9, 2.6, 7.4],
-            [6.1, 8.9, 2.6, 7.4],
-            [9.1, 11.9, 2.6, 7.4],
+            # Row B Blue Racks (y=5.0, pose: 1.5, 4.5, 7.5, 10.5)
+            [0.3, 2.7, 2.8, 7.2],
+            [3.3, 5.7, 2.8, 7.2],
+            [6.3, 8.7, 2.8, 7.2],
+            [9.3, 11.7, 2.8, 7.2],
 
-            # Dead-End Trap Zone (pose 13.5 10.0, size 3x4 -> x:[12.0..15.0], y:[8.0..12.0])
-            [11.6, 15.0, 7.6, 12.4]
+            # Dead-End Trap Zone (pose 13.5 10.0, size 2x4 -> x:[12.5..14.5], y:[8.0..12.0])
+            [12.3, 14.7, 7.8, 12.2]
         ]
 
     def _to_grid(self, x: float, y: float) -> Tuple[int, int]:
