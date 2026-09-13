@@ -44,11 +44,15 @@ def _namespace_urdf(urdf_str: str, ns: str) -> str:
 
     Replacements:
       <topic>cmd_vel</topic>           → <topic>{ns}/cmd_vel</topic>
+      <odom_topic>odom</odom_topic>   → <odom_topic>{ns}/odom</odom_topic>
+      <tf_topic>tf</tf_topic>         → <tf_topic>{ns}/tf</tf_topic>
       <topic>scan</topic>              → <topic>{ns}/scan</topic>
       <topic>camera/image_raw</topic>  → <topic>{ns}/camera/image_raw</topic>
     """
     replacements = {
         "<topic>cmd_vel</topic>":          f"<topic>{ns}/cmd_vel</topic>",
+        "<odom_topic>odom</odom_topic>":   f"<odom_topic>{ns}/odom</odom_topic>",
+        "<tf_topic>tf</tf_topic>":         f"<tf_topic>{ns}/tf</tf_topic>",
         "<topic>scan</topic>":             f"<topic>{ns}/scan</topic>",
         "<topic>camera/image_raw</topic>": f"<topic>{ns}/camera/image_raw</topic>",
     }
@@ -113,7 +117,7 @@ def generate_launch_description():
         #
         # Bridge syntax:  /gz_topic@ros_type[direction]gz_type
         #   ]  = ROS → GZ  (cmd_vel: ROS publishes, GZ subscribes)
-        #   [  = GZ → ROS  (scan, camera: GZ publishes, ROS subscribes)
+        #   [  = GZ → ROS  (scan, camera, odom: GZ publishes, ROS subscribes)
         #
         # GZ topics are rewritten by _namespace_urdf() to {ns}/...
         # ROS topics are pushed into /{ns}/... by the namespace.
@@ -123,11 +127,13 @@ def generate_launch_description():
             namespace=ns,
             arguments=[
                 f"/{ns}/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist",
+                f"/{ns}/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry",
                 f"/{ns}/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
                 f"/{ns}/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
             ],
             remappings=[
                 (f"/{ns}/cmd_vel",          "cmd_vel"),
+                (f"/{ns}/odom",             "odom"),
                 (f"/{ns}/scan",             "scan"),
                 (f"/{ns}/camera/image_raw", "camera/image_raw"),
             ],
