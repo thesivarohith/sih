@@ -4,10 +4,10 @@ multi_spawn.launch.py — 3-AMR Warehouse Swarm Launch (SIH26123)
 Spawns three independent edge_amr instances into the sih_warehouse
 world with fully namespaced sensor bridges for P2P coordination.
 
-Topology:
-  amr_1  →  (7.5, 13.0)  — top center corridor
-  amr_2  →  (13.5, 10.0) — near dead-end trap zone
-  amr_3  →  (1.5,  5.0)  — bottom-left aisle entrance
+Topology (Top-Right Staging Area):
+  amr_1  →  (11.0, 13.5, 0.1)
+  amr_2  →  (12.5, 13.5, 0.1)
+  amr_3  →  (14.0, 13.5, 0.1)
 
 Each AMR gets isolated:
   /<ns>/cmd_vel           (ROS → GZ)
@@ -31,9 +31,9 @@ from ament_index_python.packages import get_package_share_directory
 # AMR Fleet Configuration
 # ---------------------------------------------------------------------------
 FLEET = [
-    {"ns": "amr_1", "x": "11.0", "y": "13.5", "z": "0.1", "yaw": "0.0"},
-    {"ns": "amr_2", "x": "12.5", "y": "13.5", "z": "0.1", "yaw": "0.0"},
-    {"ns": "amr_3", "x": "14.0", "y": "13.5", "z": "0.1", "yaw": "0.0"},
+    {"ns": "amr_1", "x": "11.0", "y": "2.0", "z": "0.1", "yaw": "1.5708"},
+    {"ns": "amr_2", "x": "12.5", "y": "2.0", "z": "0.1", "yaw": "1.5708"},
+    {"ns": "amr_3", "x": "14.0", "y": "2.0", "z": "0.1", "yaw": "1.5708"},
 ]
 
 
