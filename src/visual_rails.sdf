@@ -1,0 +1,1084 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <model name="visual_rails">
+    <static>true</static>
+    <link name="rail_node_Int_X0_25_Y-1_5">
+      <pose>0.25 -1.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X0_25_Y7_5">
+      <pose>0.25 7.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X0_25_Y16_0">
+      <pose>0.25 16.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X3_0_Y-1_5">
+      <pose>3.00 -1.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X3_0_Y7_5">
+      <pose>3.00 7.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X3_0_Y16_0">
+      <pose>3.00 16.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X6_0_Y-1_5">
+      <pose>6.00 -1.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X6_0_Y7_5">
+      <pose>6.00 7.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X6_0_Y16_0">
+      <pose>6.00 16.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X9_0_Y-1_5">
+      <pose>9.00 -1.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X9_0_Y7_5">
+      <pose>9.00 7.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X9_0_Y16_0">
+      <pose>9.00 16.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X12_0_Y-1_5">
+      <pose>12.00 -1.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X12_0_Y7_5">
+      <pose>12.00 7.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X12_0_Y16_0">
+      <pose>12.00 16.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X13_5_Y-1_5">
+      <pose>13.50 -1.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X13_5_Y7_5">
+      <pose>13.50 7.50 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Int_X13_5_Y16_0">
+      <pose>13.50 16.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.22</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.0 0.85 0.35 1</ambient>
+          <diffuse>0.1 0.95 0.4 1</diffuse>
+          <specular>0.4 0.9 0.5 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_1">
+      <pose>0.25 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_2">
+      <pose>0.25 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_3">
+      <pose>0.25 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_4">
+      <pose>0.25 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_5">
+      <pose>0.25 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_6">
+      <pose>3.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_7">
+      <pose>3.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_8">
+      <pose>3.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_9">
+      <pose>3.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_1_Bay_10">
+      <pose>3.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_1">
+      <pose>3.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_2">
+      <pose>3.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_3">
+      <pose>3.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_4">
+      <pose>3.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_5">
+      <pose>3.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_6">
+      <pose>6.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_7">
+      <pose>6.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_8">
+      <pose>6.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_9">
+      <pose>6.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_2_Bay_10">
+      <pose>6.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_1">
+      <pose>6.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_2">
+      <pose>6.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_3">
+      <pose>6.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_4">
+      <pose>6.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_5">
+      <pose>6.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_6">
+      <pose>9.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_7">
+      <pose>9.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_8">
+      <pose>9.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_9">
+      <pose>9.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_3_Bay_10">
+      <pose>9.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_1">
+      <pose>9.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_2">
+      <pose>9.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_3">
+      <pose>9.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_4">
+      <pose>9.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_5">
+      <pose>9.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_6">
+      <pose>12.00 8.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_7">
+      <pose>12.00 9.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_8">
+      <pose>12.00 10.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_9">
+      <pose>12.00 10.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Yellow_4_Bay_10">
+      <pose>12.00 11.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_1">
+      <pose>0.25 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_2">
+      <pose>0.25 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_3">
+      <pose>0.25 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_4">
+      <pose>0.25 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_5">
+      <pose>0.25 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_6">
+      <pose>3.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_7">
+      <pose>3.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_8">
+      <pose>3.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_9">
+      <pose>3.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_1_Bay_10">
+      <pose>3.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_1">
+      <pose>3.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_2">
+      <pose>3.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_3">
+      <pose>3.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_4">
+      <pose>3.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_5">
+      <pose>3.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_6">
+      <pose>6.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_7">
+      <pose>6.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_8">
+      <pose>6.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_9">
+      <pose>6.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_2_Bay_10">
+      <pose>6.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_1">
+      <pose>6.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_2">
+      <pose>6.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_3">
+      <pose>6.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_4">
+      <pose>6.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_5">
+      <pose>6.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_6">
+      <pose>9.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_7">
+      <pose>9.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_8">
+      <pose>9.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_9">
+      <pose>9.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_3_Bay_10">
+      <pose>9.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_1">
+      <pose>9.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_2">
+      <pose>9.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_3">
+      <pose>9.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_4">
+      <pose>9.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_5">
+      <pose>9.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_6">
+      <pose>12.00 3.40 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_7">
+      <pose>12.00 4.20 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_8">
+      <pose>12.00 5.00 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_9">
+      <pose>12.00 5.80 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+    <link name="rail_node_Rack_Blue_4_Bay_10">
+      <pose>12.00 6.60 0.005 0 0 0</pose>
+      <visual name="vis">
+        <geometry><cylinder><radius>0.18</radius><length>0.01</length></cylinder></geometry>
+        <material>
+          <ambient>0.85 0.70 0.10 1</ambient>
+          <diffuse>0.95 0.80 0.15 1</diffuse>
+          <specular>0.9 0.85 0.3 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

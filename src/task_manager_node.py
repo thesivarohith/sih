@@ -65,9 +65,9 @@ class WarehouseGraph:
     def _build_graph(self):
         # Centerline coordinates for virtual rails
         # Vertical Aisles (X)
-        x_aisles = [0.25, 3.0, 6.0, 9.0, 12.0, 13.5]
+        x_aisles = [-0.75, 0.0, 3.0, 6.0, 9.0, 11.0, 12.0, 12.5, 13.0, 14.0]
         # Horizontal Corridors (Y)
-        y_corridors = [1.5, 7.5, 13.5]
+        y_corridors = [2.5, 5.0, 7.5, 12.5, 13.5]
 
         # 1. Intersection Nodes
         for x in x_aisles:
@@ -75,50 +75,46 @@ class WarehouseGraph:
                 node_id = f"Int_X{x}_Y{y}"
                 self.nodes[node_id] = (x, y)
 
-        # 2. Racks & 10 Parking Bays per Rack
-        # Physical Racks (size 2m x 4m):
-        # Row A Yellow Racks (y=10.0, height y:[8.0..12.0])
-        # Row B Blue Racks (y=5.0, height y:[3.0..7.0])
+        # 2. Racks & 10 Parking Bays per Rack (Equidistant 0.5m from rack bounds)
         racks = [
-            # (Rack_Name, Rack_Alias, center_x, center_y, west_aisle_x, east_aisle_x)
-            ("Rack_Yellow_1", "Rack_1A", 1.5, 10.0, 0.25, 3.0),
-            ("Rack_Yellow_2", "Rack_2A", 4.5, 10.0, 3.0, 6.0),
-            ("Rack_Yellow_3", "Rack_3A", 7.5, 10.0, 6.0, 9.0),
-            ("Rack_Yellow_4", "Rack_4A", 10.5, 10.0, 9.0, 12.0),
+            ("Rack_Yellow_1", "Rack_1A", 1.5, 10.0),
+            ("Rack_Yellow_2", "Rack_2A", 4.5, 10.0),
+            ("Rack_Yellow_3", "Rack_3A", 7.5, 10.0),
+            ("Rack_Yellow_4", "Rack_4A", 10.5, 10.0),
 
-            ("Rack_Blue_1", "Rack_1B", 1.5, 5.0, 0.25, 3.0),
-            ("Rack_Blue_2", "Rack_2B", 4.5, 5.0, 3.0, 6.0),
-            ("Rack_Blue_3", "Rack_3B", 7.5, 5.0, 6.0, 9.0),
-            ("Rack_Blue_4", "Rack_4B", 10.5, 5.0, 9.0, 12.0),
+            ("Rack_Blue_1", "Rack_1B", 1.5, 5.0),
+            ("Rack_Blue_2", "Rack_2B", 4.5, 5.0),
+            ("Rack_Blue_3", "Rack_3B", 7.5, 5.0),
+            ("Rack_Blue_4", "Rack_4B", 10.5, 5.0),
         ]
 
-        # Y offsets for 5 bays along West face and 5 bays along East face of each rack
-        y_offsets = [-1.6, -0.8, 0.0, 0.8, 1.6]
+        for rack_name, rack_alias, cx, cy in racks:
+            bay_coords = {
+                1: (round(cx - 1.5, 2), round(cy + 1.2, 2)),
+                2: (round(cx - 1.5, 2), round(cy, 2)),
+                3: (round(cx - 1.5, 2), round(cy - 1.2, 2)),
 
-        for rack_name, rack_alias, cx, cy, west_x, east_x in racks:
-            # 5 West Bays (Bays 1 to 5) on vertical aisle west_x
-            for i, offset in enumerate(y_offsets, start=1):
+                4: (round(cx - 0.5, 2), round(cy - 2.5, 2)),
+                5: (round(cx + 0.5, 2), round(cy - 2.5, 2)),
+
+                6: (round(cx + 1.5, 2), round(cy - 1.2, 2)),
+                7: (round(cx + 1.5, 2), round(cy, 2)),
+                8: (round(cx + 1.5, 2), round(cy + 1.2, 2)),
+
+                9: (round(cx + 0.5, 2), round(cy + 2.5, 2)),
+                10: (round(cx - 0.5, 2), round(cy + 2.5, 2)),
+            }
+
+            short_color = "yellow" if "Yellow" in rack_name else "blue"
+            idx = rack_name.split("_")[-1]
+
+            for i in range(1, 11):
                 bay_name = f"{rack_name}_Bay_{i}"
                 alias_name = f"{rack_alias}_Bay_{i}"
-                bx, by = west_x, round(cy + offset, 2)
+                bx, by = bay_coords[i]
                 self.nodes[bay_name] = (bx, by)
                 self.aliases[bay_name.lower()] = bay_name
                 self.aliases[alias_name.lower()] = bay_name
-                short_color = "yellow" if "Yellow" in rack_name else "blue"
-                idx = rack_name.split("_")[-1]
-                self.aliases[f"{short_color}_{idx}_bay_{i}"] = bay_name
-                self.aliases[f"rack_{short_color}_{idx}_bay_{i}"] = bay_name
-
-            # 5 East Bays (Bays 6 to 10) on vertical aisle east_x
-            for i, offset in enumerate(y_offsets, start=6):
-                bay_name = f"{rack_name}_Bay_{i}"
-                alias_name = f"{rack_alias}_Bay_{i}"
-                bx, by = east_x, round(cy + offset, 2)
-                self.nodes[bay_name] = (bx, by)
-                self.aliases[bay_name.lower()] = bay_name
-                self.aliases[alias_name.lower()] = bay_name
-                short_color = "yellow" if "Yellow" in rack_name else "blue"
-                idx = rack_name.split("_")[-1]
                 self.aliases[f"{short_color}_{idx}_bay_{i}"] = bay_name
                 self.aliases[f"rack_{short_color}_{idx}_bay_{i}"] = bay_name
 
@@ -130,25 +126,45 @@ class WarehouseGraph:
         for n in self.nodes:
             self.neighbors[n] = []
 
-        # Connect vertical aisles (for each x_aisle)
-        for x in x_aisles:
+        all_x = sorted(list(set(x for x, y in self.nodes.values())))
+        all_y = sorted(list(set(y for x, y in self.nodes.values())))
+
+        # Connect along vertical lines
+        for x in all_x:
             nodes_on_x = [n for n, (nx, ny) in self.nodes.items() if abs(nx - x) < 0.05]
             nodes_on_x.sort(key=lambda n: self.nodes[n][1])
             for i in range(len(nodes_on_x) - 1):
                 n1, n2 = nodes_on_x[i], nodes_on_x[i+1]
                 dist = math.hypot(self.nodes[n1][0] - self.nodes[n2][0], self.nodes[n1][1] - self.nodes[n2][1])
-                self.neighbors[n1].append((n2, dist))
-                self.neighbors[n2].append((n1, dist))
+                if dist < 5.0:
+                    self.neighbors[n1].append((n2, dist))
+                    self.neighbors[n2].append((n1, dist))
 
-        # Connect horizontal corridors (for each y_corridor)
-        for y in y_corridors:
-            intersections_on_y = [n for n, (nx, ny) in self.nodes.items() if n.startswith("Int_") and abs(ny - y) < 0.05]
-            intersections_on_y.sort(key=lambda n: self.nodes[n][0])
-            for i in range(len(intersections_on_y) - 1):
-                n1, n2 = intersections_on_y[i], intersections_on_y[i+1]
+        # Connect along horizontal lines
+        for y in all_y:
+            nodes_on_y = [n for n, (nx, ny) in self.nodes.items() if abs(ny - y) < 0.05]
+            nodes_on_y.sort(key=lambda n: self.nodes[n][0])
+            for i in range(len(nodes_on_y) - 1):
+                n1, n2 = nodes_on_y[i], nodes_on_y[i+1]
                 dist = math.hypot(self.nodes[n1][0] - self.nodes[n2][0], self.nodes[n1][1] - self.nodes[n2][1])
-                self.neighbors[n1].append((n2, dist))
-                self.neighbors[n2].append((n1, dist))
+                if dist < 5.0:
+                    self.neighbors[n1].append((n2, dist))
+                    self.neighbors[n2].append((n1, dist))
+
+        # Ensure every node is connected
+        for n1, (x1, y1) in self.nodes.items():
+            if not self.neighbors[n1]:
+                best_n2 = None
+                best_dist = float('inf')
+                for n2, (x2, y2) in self.nodes.items():
+                    if n1 != n2:
+                        dist = math.hypot(x1 - x2, y1 - y2)
+                        if dist < best_dist:
+                            best_dist = dist
+                            best_n2 = n2
+                if best_n2:
+                    self.neighbors[n1].append((best_n2, best_dist))
+                    self.neighbors[best_n2].append((n1, best_dist))
 
     def resolve_node(self, target: Any) -> str:
         """Resolve a semantic string name or (x, y) coordinate to a graph node_id."""
@@ -200,6 +216,13 @@ class AStarPlanner:
         if isinstance(goal, (list, tuple)) and len(goal) >= 2:
             goal_world_pos = (float(goal[0]), float(goal[1]))
 
+        if isinstance(start, (list, tuple)) and len(start) >= 2:
+            sx, sy = float(start[0]), float(start[1])
+            if sx >= 12.5:
+                egress_node = self.graph.find_nearest_node(12.0, sy)
+                if egress_node and egress_node != start_node:
+                    start_node = egress_node
+
         if start_node == goal_node:
             waypoints = [self.graph.nodes[start_node]]
             if goal_world_pos:
@@ -245,10 +268,6 @@ class AStarPlanner:
         path_nodes.reverse()
 
         waypoints = [self.graph.nodes[nid] for nid in path_nodes]
-
-        if goal_world_pos and (not waypoints or math.hypot(waypoints[-1][0] - goal_world_pos[0], waypoints[-1][1] - goal_world_pos[1]) > 0.1):
-            waypoints.append(goal_world_pos)
-
         return waypoints
 
 
@@ -261,20 +280,38 @@ class TaskManagerNode(Node):
     def __init__(self):
         super().__init__("task_manager_node")
 
-        # ---------------------------------------------------------------
-        # ROS 2 Parameters
-        # ---------------------------------------------------------------
-        self.declare_parameter("robot_id", "amr_1")
-        self.declare_parameter("peer_ids", ["amr_2", "amr_3"])
+        ns = self.get_namespace().strip('/')
+        default_id = ns if (ns and ns != '/') else "amr_1"
+        all_robots = ["amr_1", "amr_2", "amr_3"]
+        default_peers = [r for r in all_robots if r != default_id]
+
+        self.declare_parameter("robot_id", default_id)
+        self.declare_parameter("peer_ids", default_peers)
         self.declare_parameter("claim_window_ms", 200)
-        self.declare_parameter("waypoint_tolerance_m", 0.3)
+        self.declare_parameter("waypoint_tolerance_m", 0.25)
         self.declare_parameter("linear_speed_m_s", 0.5)
+
+        # Default spawn poses in world frame (Top Staging Area to right of Red Box)
+        spawn_defaults = {
+            "amr_1": (13.0, 7.5, 3.14159),
+            "amr_2": (13.0, 5.0, 3.14159),
+            "amr_3": (13.0, 2.5, 3.14159)
+        }
+        def_sx, def_sy, def_syaw = spawn_defaults.get(default_id, (0.0, 5.0, 0.0))
+
+        self.declare_parameter("spawn_x", def_sx)
+        self.declare_parameter("spawn_y", def_sy)
+        self.declare_parameter("spawn_yaw", def_syaw)
 
         self._robot_id             = self.get_parameter("robot_id").value
         self._peer_ids             = self.get_parameter("peer_ids").value
         self._claim_window_sec     = float(self.get_parameter("claim_window_ms").value) / 1000.0
         self._waypoint_tolerance   = float(self.get_parameter("waypoint_tolerance_m").value)
         self._linear_speed         = float(self.get_parameter("linear_speed_m_s").value)
+
+        self._spawn_x              = float(self.get_parameter("spawn_x").value)
+        self._spawn_y              = float(self.get_parameter("spawn_y").value)
+        self._spawn_yaw            = float(self.get_parameter("spawn_yaw").value)
 
         # ---------------------------------------------------------------
         # State Machine & Navigation State
@@ -285,10 +322,10 @@ class TaskManagerNode(Node):
         self._planner = AStarPlanner()
         self._waypoints: List[Tuple[float, float]] = []
 
-        # Position tracking from Odom
-        self._pos_x: float = 0.0
-        self._pos_y: float = 0.0
-        self._current_yaw: float = 0.0
+        # Position tracking from Odom in Gazebo World Map Frame
+        self._pos_x: float = self._spawn_x
+        self._pos_y: float = self._spawn_y
+        self._current_yaw: float = self._spawn_yaw
 
         # Motion & KPI Metrics Tracking
         self._is_moving: bool = False
@@ -306,6 +343,7 @@ class TaskManagerNode(Node):
         # Claim resolution state
         self._pending_claim_task_id: Optional[str] = None
         self._claims_received: Dict[str, Dict[str, Any]] = {}
+        self._available_task_pool: Dict[str, Dict[str, Any]] = {}
         self._claim_timer = None
 
         # ---------------------------------------------------------------
@@ -328,8 +366,8 @@ class TaskManagerNode(Node):
         # Publishers & Subscriptions
         # ---------------------------------------------------------------
         # Global P2P Task Pool topic
-        self._pub_pool = self.create_publisher(String, "swarm/tasks/pool", pool_qos)
-        self._sub_pool = self.create_subscription(String, "swarm/tasks/pool", self._pool_message_cb, pool_qos)
+        self._pub_pool = self.create_publisher(String, "/swarm/tasks/pool", pool_qos)
+        self._sub_pool = self.create_subscription(String, "/swarm/tasks/pool", self._pool_message_cb, pool_qos)
 
         # Local metrics & status publishers
         self._pub_metrics = self.create_publisher(
@@ -347,11 +385,11 @@ class TaskManagerNode(Node):
         self._sub_obstruction = self.create_subscription(String, f"/{self._robot_id}/obstruction_status", self._obstruction_cb, pool_qos)
 
         # Global P2P Telemetry Channel
-        self._pub_telemetry = self.create_publisher(String, f"swarm/{self._robot_id}/telemetry", pool_qos)
+        self._pub_telemetry = self.create_publisher(String, f"/swarm/{self._robot_id}/telemetry", pool_qos)
         for pid in self._peer_ids:
             self.create_subscription(
                 String,
-                f"swarm/{pid}/telemetry",
+                f"/swarm/{pid}/telemetry",
                 lambda msg, peer=pid: self._peer_telemetry_cb(msg, peer),
                 pool_qos
             )
@@ -372,15 +410,23 @@ class TaskManagerNode(Node):
     # ===================================================================
 
     def _odom_cb(self, msg: Odometry):
-        """Extract x, y position and yaw orientation from odometry."""
-        self._pos_x = msg.pose.pose.position.x
-        self._pos_y = msg.pose.pose.position.y
+        """Extract x, y position and yaw orientation from odometry transformed to Gazebo World Frame."""
+        raw_x = msg.pose.pose.position.x
+        raw_y = msg.pose.pose.position.y
 
         # Extract yaw angle from orientation quaternion (z-axis rotation)
         q = msg.pose.pose.orientation
         siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
         cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
-        self._current_yaw = math.atan2(siny_cosp, cosy_cosp)
+        raw_yaw = math.atan2(siny_cosp, cosy_cosp)
+
+        # Transform from local spawn frame to Gazebo World Map frame
+        cos_s = math.cos(self._spawn_yaw)
+        sin_s = math.sin(self._spawn_yaw)
+
+        self._pos_x = self._spawn_x + (raw_x * cos_s - raw_y * sin_s)
+        self._pos_y = self._spawn_y + (raw_x * sin_s + raw_y * cos_s)
+        self._current_yaw = math.atan2(math.sin(self._spawn_yaw + raw_yaw), math.cos(self._spawn_yaw + raw_yaw))
 
     def _cmd_vel_monitor_cb(self, msg: Twist):
         """Monitor velocity commands to differentiate active travel vs idle wait time."""
@@ -452,8 +498,13 @@ class TaskManagerNode(Node):
         msg_type = data.get("msg_type")
 
         if msg_type == "AVAILABLE":
+            task_id = data.get("task_id")
+            if task_id:
+                self._available_task_pool[task_id] = data
             self._handle_available_task(data)
         elif msg_type == "CLAIM":
+            task_id = data.get("task_id")
+            self._available_task_pool.pop(task_id, None)
             self._handle_claim_message(data)
         elif msg_type == "RELEASED":
             self._handle_released_task(data)
@@ -483,6 +534,9 @@ class TaskManagerNode(Node):
             "task_data": data,
             "timestamp": _time.time()
         }
+
+        # Seed own claim into local resolution registry immediately
+        self._claims_received[self._robot_id] = claim_payload
 
         msg = String()
         msg.data = json.dumps(claim_payload)
@@ -546,10 +600,16 @@ class TaskManagerNode(Node):
                 self._claim_timestamp = _time.time()
                 self._active_travel_time_sec = 0.0
                 self._idle_wait_time_sec = 0.0
+                self._available_task_pool.pop(task_id, None)
             else:
                 self.get_logger().info(
-                    f"[{self._robot_id}] Task '{task_id}' awarded to peer '{winner_id}'."
+                    f"[{self._robot_id}] Task '{task_id}' awarded to peer '{winner_id}'. Remaining IDLE."
                 )
+                self._state = "IDLE"
+                self._current_task = None
+                self._waypoints = []
+                self._stop_motors()
+                self._available_task_pool.pop(task_id, None)
 
         self._pending_claim_task_id = None
         self._claims_received = {}
@@ -583,7 +643,19 @@ class TaskManagerNode(Node):
 
         # State Machine Transitions
         if self._state == "IDLE":
-            pass
+            if self._pending_claim_task_id is None and self._available_task_pool:
+                best_task_id = None
+                best_dist = float('inf')
+                for tid, task_data in list(self._available_task_pool.items()):
+                    p_raw = task_data.get("pickup", [0.0, 0.0])
+                    p_coords = self._planner.graph.get_coords(p_raw)
+                    d = math.hypot(p_coords[0] - self._pos_x, p_coords[1] - self._pos_y)
+                    if d < best_dist:
+                        best_dist = d
+                        best_task_id = tid
+
+                if best_task_id and best_task_id in self._available_task_pool:
+                    self._handle_available_task(self._available_task_pool[best_task_id])
 
         elif self._state == "CLAIMED":
             pickup = self._current_task.get("pickup", [self._pos_x, self._pos_y])
@@ -603,7 +675,14 @@ class TaskManagerNode(Node):
                 self._state = "DELIVERING"
             else:
                 target_wp = self._waypoints[0]
-                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1])
+                is_turn = False
+                if len(self._waypoints) > 1:
+                    nwp = self._waypoints[1]
+                    tw_yaw = math.atan2(nwp[1] - target_wp[1], nwp[0] - target_wp[0])
+                    cur_yaw = math.atan2(target_wp[1] - self._pos_y, target_wp[0] - self._pos_x)
+                    is_turn = abs(math.atan2(math.sin(tw_yaw - cur_yaw), math.cos(tw_yaw - cur_yaw))) > 0.35
+                tol = 0.15 if is_turn else self._waypoint_tolerance
+                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
                 if arrived_wp:
                     self._waypoints.pop(0)
 
@@ -615,7 +694,14 @@ class TaskManagerNode(Node):
                 self._complete_task()
             else:
                 target_wp = self._waypoints[0]
-                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1])
+                is_turn = False
+                if len(self._waypoints) > 1:
+                    nwp = self._waypoints[1]
+                    tw_yaw = math.atan2(nwp[1] - target_wp[1], nwp[0] - target_wp[0])
+                    cur_yaw = math.atan2(target_wp[1] - self._pos_y, target_wp[0] - self._pos_x)
+                    is_turn = abs(math.atan2(math.sin(tw_yaw - cur_yaw), math.cos(tw_yaw - cur_yaw))) > 0.35
+                tol = 0.15 if is_turn else self._waypoint_tolerance
+                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
                 if arrived_wp:
                     self._waypoints.pop(0)
 
@@ -623,20 +709,34 @@ class TaskManagerNode(Node):
             # Stopping motors during handoff
             self._stop_motors()
 
-    def _navigate_towards(self, target_x: float, target_y: float) -> bool:
+    def _navigate_towards(self, target_x: float, target_y: float, tolerance: Optional[float] = None) -> bool:
         """Simple proportional velocity control towards target waypoint with LiDAR braking & Priority Aging."""
         dx = target_x - self._pos_x
         dy = target_y - self._pos_y
         dist = math.sqrt(dx * dx + dy * dy)
 
-        if dist <= self._waypoint_tolerance:
+        effective_tolerance = tolerance if tolerance is not None else self._waypoint_tolerance
+        if dist <= effective_tolerance:
             self._stop_motors()
             return True
 
-        # Step 4: Real-time LiDAR Safety Brake
+        # Step 4: Real-time LiDAR Safety Brake (Peer-Aware Filter)
         if self._lidar_obstacle_detected:
-            self._stop_motors()
-            return False
+            peer_yielding_nearby = False
+            for peer_id, peer_data in self._peer_telemetry.items():
+                ppos = peer_data.get("pos", [999.0, 999.0])
+                pdist = math.sqrt((ppos[0] - self._pos_x)**2 + (ppos[1] - self._pos_y)**2)
+                if 0.35 < pdist < 1.5 and not peer_data.get("is_moving", False):
+                    self_score = (10.0 * self._idle_wait_time_sec) + self._battery_level
+                    peer_wait = peer_data.get("idle_wait_sec", 0.0)
+                    peer_batt = peer_data.get("battery_pct", 100.0)
+                    peer_score = (10.0 * peer_wait) + peer_batt
+                    if self_score >= peer_score:
+                        peer_yielding_nearby = True
+
+            if not peer_yielding_nearby:
+                self._stop_motors()
+                return False
 
         # Step 5: Inter-AMR Space-Time Conflict Resolution & Priority Aging Yield
         if _time.time() < self._yield_until_time:
@@ -646,42 +746,35 @@ class TaskManagerNode(Node):
         for peer_id, peer_data in self._peer_telemetry.items():
             ppos = peer_data.get("pos", [999.0, 999.0])
             pdist = math.sqrt((ppos[0] - self._pos_x)**2 + (ppos[1] - self._pos_y)**2)
-            if pdist < 0.9 and peer_data.get("is_moving", False):
+            if pdist < 1.5:
                 # Calculate Priority Aging score
                 self_score = (10.0 * self._idle_wait_time_sec) + self._battery_level
                 peer_wait = peer_data.get("idle_wait_sec", 0.0)
                 peer_batt = peer_data.get("battery_pct", 100.0)
                 peer_score = (10.0 * peer_wait) + peer_batt
 
-                if self_score < peer_score:
+                peer_is_active = peer_data.get("state") in ("EN_ROUTE_PICKUP", "DELIVERING")
+                if peer_is_active and (self_score < peer_score or (abs(self_score - peer_score) < 0.01 and self._robot_id > peer_id)):
                     # Yield right of way with random jitter delay (10-200ms)
                     jitter = (hash(self._robot_id + str(_time.time())) % 190 + 10) / 1000.0
-                    self._yield_until_time = _time.time() + 0.5 + jitter
+                    self._yield_until_time = _time.time() + 1.2 + jitter
                     self.get_logger().info(
-                        f"[{self._robot_id}] Space-Time conflict with {peer_id}! Yielding right-of-way ({jitter*1000:.0f}ms jitter)."
+                        f"[{self._robot_id}] Space-Time conflict with {peer_id} (dist: {pdist:.2f}m)! Waiting at intersection."
                     )
                     self._stop_motors()
                     return False
 
         # Calculate steering angle towards waypoint
         target_yaw = math.atan2(dy, dx)
-        yaw_err = target_yaw - self._current_yaw
-        yaw_err = math.atan2(math.sin(yaw_err), math.cos(yaw_err))
+        yaw_error = math.atan2(math.sin(target_yaw - self._current_yaw), math.cos(target_yaw - self._current_yaw))
 
         cmd = Twist()
-        if abs(yaw_err) > 0.15:
-            # Turn in place: zero linear speed, minimum 0.2 rad/s angular speed to prevent stalling
-            ang_spd = max(0.2, min(1.0, abs(yaw_err) * 1.5))
-            cmd.angular.z = ang_spd if yaw_err > 0 else -ang_spd
+        if abs(yaw_error) > 0.10:
             cmd.linear.x = 0.0
+            cmd.angular.z = max(min(yaw_error * 1.5, 0.5), -0.5)
         else:
-            # Facing waypoint (within 0.15 rad): drive forward along virtual rail
-            cmd.linear.x = min(self._linear_speed, max(0.15, dist * 0.5))
-            ang_val = 1.0 * yaw_err
-            if abs(ang_val) > 0.02:
-                cmd.angular.z = math.copysign(max(0.1, abs(ang_val)), ang_val)
-            else:
-                cmd.angular.z = 0.0
+            cmd.linear.x = 0.3
+            cmd.angular.z = yaw_error * 0.5
 
         self._pub_cmd_vel.publish(cmd)
         return False
