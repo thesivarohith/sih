@@ -781,13 +781,7 @@ class TaskManagerNode(Node):
                 self._state = "DELIVERING"
             else:
                 target_wp = self._waypoints[0]
-                is_turn = False
-                if len(self._waypoints) > 1:
-                    nwp = self._waypoints[1]
-                    tw_yaw = math.atan2(nwp[1] - target_wp[1], nwp[0] - target_wp[0])
-                    cur_yaw = math.atan2(target_wp[1] - self._pos_y, target_wp[0] - self._pos_x)
-                    is_turn = abs(math.atan2(math.sin(tw_yaw - cur_yaw), math.cos(tw_yaw - cur_yaw))) > 0.35
-                tol = 0.15 if is_turn else self._waypoint_tolerance
+                tol = 0.08
                 arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
                 if arrived_wp:
                     self._waypoints.pop(0)
@@ -800,13 +794,7 @@ class TaskManagerNode(Node):
                 self._complete_task()
             else:
                 target_wp = self._waypoints[0]
-                is_turn = False
-                if len(self._waypoints) > 1:
-                    nwp = self._waypoints[1]
-                    tw_yaw = math.atan2(nwp[1] - target_wp[1], nwp[0] - target_wp[0])
-                    cur_yaw = math.atan2(target_wp[1] - self._pos_y, target_wp[0] - self._pos_x)
-                    is_turn = abs(math.atan2(math.sin(tw_yaw - cur_yaw), math.cos(tw_yaw - cur_yaw))) > 0.35
-                tol = 0.15 if is_turn else self._waypoint_tolerance
+                tol = 0.08
                 arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
                 if arrived_wp:
                     self._waypoints.pop(0)
@@ -875,12 +863,26 @@ class TaskManagerNode(Node):
         yaw_error = math.atan2(math.sin(target_yaw - self._current_yaw), math.cos(target_yaw - self._current_yaw))
 
         cmd = Twist()
-        if abs(yaw_error) > 0.10:
+        # STRICT 90-DEGREE ZERO-RADIUS TURN-IN-PLACE STAGE
+        # If yaw error > 0.04 rad (~2.3 degrees), HALT linear speed completely and turn in place
+        if abs(yaw_error) > 0.04:
             cmd.linear.x = 0.0
-            cmd.angular.z = max(min(yaw_error * 1.5, 0.5), -0.5)
+            cmd.angular.z = math.copysign(max(0.35, min(0.8, abs(yaw_error) * 2.0)), yaw_error)
         else:
-            cmd.linear.x = 0.3
-            cmd.angular.z = yaw_error * 0.5
+            # TRAIN-LIKE RAIL DRIVE STAGE
+            # AMR is aligned with the rail vector. Drive forward and apply cross-track lateral error correction.
+            speed = min(self._linear_speed, max(0.15, dist * 0.8))
+            cmd.linear.x = speed
+
+            # Cross-track lateral error calculation
+            if abs(dx) < 0.15:
+                lat_err = target_x - self._pos_x
+                cmd.angular.z = max(min(lat_err * 2.5 + yaw_error * 0.5, 0.4), -0.4)
+            elif abs(dy) < 0.15:
+                lat_err = target_y - self._pos_y
+                cmd.angular.z = max(min(-lat_err * 2.5 + yaw_error * 0.5, 0.4), -0.4)
+            else:
+                cmd.angular.z = yaw_error * 0.5
 
         self._pub_cmd_vel.publish(cmd)
         return False
