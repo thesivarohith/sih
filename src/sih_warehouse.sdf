@@ -259,7 +259,7 @@
     <!-- ===================== Dead-End Trap Zone — Hazard Red ===================== -->
     <model name="trap_zone">
       <static>true</static>
-      <pose>13.5 10.0 0.75 0 0 0</pose>
+      <pose>15.5 10.0 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
