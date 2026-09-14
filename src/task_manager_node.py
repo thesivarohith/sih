@@ -1021,7 +1021,7 @@ class TaskManagerNode(Node):
                 correction = max(-0.15, min(0.15, -1.5 * crosstrack))
                 cmd.linear.x = speed
                 cmd.angular.z = correction
-                self._cmd_vel_pub.publish(cmd)
+                self._pub_cmd_vel.publish(cmd)
                 return False
 
     def _stop_motors(self):
