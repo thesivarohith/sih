@@ -36,7 +36,7 @@ import math
 import hashlib
 import heapq
 import time as _time
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, Any, Optional, List, Tuple, Union
 
 import rclpy
 from rclpy.node import Node
@@ -47,116 +47,208 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 
 
+class WarehouseGraph:
+    """
+    Topological Graph (Virtual Rails) for 15x15m SIH Warehouse Map.
+    Auto-generates:
+      1. Center-aisle intersection nodes at main corridor intersections.
+      2. 10 semantic parking bays around each physical rack (Row A & Row B).
+      3. Connected edges strictly along center-lines to keep AMRs centered in aisles
+         (at least 0.6m from rack bounds) to prevent corner clipping.
+    """
+    def __init__(self):
+        self.nodes: Dict[str, Tuple[float, float]] = {}
+        self.neighbors: Dict[str, List[Tuple[str, float]]] = {}
+        self.aliases: Dict[str, str] = {}
+        self._build_graph()
+
+    def _build_graph(self):
+        # Centerline coordinates for virtual rails
+        # Vertical Aisles (X)
+        x_aisles = [0.25, 3.0, 6.0, 9.0, 12.0, 13.5]
+        # Horizontal Corridors (Y)
+        y_corridors = [1.5, 7.5, 13.5]
+
+        # 1. Intersection Nodes
+        for x in x_aisles:
+            for y in y_corridors:
+                node_id = f"Int_X{x}_Y{y}"
+                self.nodes[node_id] = (x, y)
+
+        # 2. Racks & 10 Parking Bays per Rack
+        # Physical Racks (size 2m x 4m):
+        # Row A Yellow Racks (y=10.0, height y:[8.0..12.0])
+        # Row B Blue Racks (y=5.0, height y:[3.0..7.0])
+        racks = [
+            # (Rack_Name, Rack_Alias, center_x, center_y, west_aisle_x, east_aisle_x)
+            ("Rack_Yellow_1", "Rack_1A", 1.5, 10.0, 0.25, 3.0),
+            ("Rack_Yellow_2", "Rack_2A", 4.5, 10.0, 3.0, 6.0),
+            ("Rack_Yellow_3", "Rack_3A", 7.5, 10.0, 6.0, 9.0),
+            ("Rack_Yellow_4", "Rack_4A", 10.5, 10.0, 9.0, 12.0),
+
+            ("Rack_Blue_1", "Rack_1B", 1.5, 5.0, 0.25, 3.0),
+            ("Rack_Blue_2", "Rack_2B", 4.5, 5.0, 3.0, 6.0),
+            ("Rack_Blue_3", "Rack_3B", 7.5, 5.0, 6.0, 9.0),
+            ("Rack_Blue_4", "Rack_4B", 10.5, 5.0, 9.0, 12.0),
+        ]
+
+        # Y offsets for 5 bays along West face and 5 bays along East face of each rack
+        y_offsets = [-1.6, -0.8, 0.0, 0.8, 1.6]
+
+        for rack_name, rack_alias, cx, cy, west_x, east_x in racks:
+            # 5 West Bays (Bays 1 to 5) on vertical aisle west_x
+            for i, offset in enumerate(y_offsets, start=1):
+                bay_name = f"{rack_name}_Bay_{i}"
+                alias_name = f"{rack_alias}_Bay_{i}"
+                bx, by = west_x, round(cy + offset, 2)
+                self.nodes[bay_name] = (bx, by)
+                self.aliases[bay_name.lower()] = bay_name
+                self.aliases[alias_name.lower()] = bay_name
+                short_color = "yellow" if "Yellow" in rack_name else "blue"
+                idx = rack_name.split("_")[-1]
+                self.aliases[f"{short_color}_{idx}_bay_{i}"] = bay_name
+                self.aliases[f"rack_{short_color}_{idx}_bay_{i}"] = bay_name
+
+            # 5 East Bays (Bays 6 to 10) on vertical aisle east_x
+            for i, offset in enumerate(y_offsets, start=6):
+                bay_name = f"{rack_name}_Bay_{i}"
+                alias_name = f"{rack_alias}_Bay_{i}"
+                bx, by = east_x, round(cy + offset, 2)
+                self.nodes[bay_name] = (bx, by)
+                self.aliases[bay_name.lower()] = bay_name
+                self.aliases[alias_name.lower()] = bay_name
+                short_color = "yellow" if "Yellow" in rack_name else "blue"
+                idx = rack_name.split("_")[-1]
+                self.aliases[f"{short_color}_{idx}_bay_{i}"] = bay_name
+                self.aliases[f"rack_{short_color}_{idx}_bay_{i}"] = bay_name
+
+        # Ensure all node names map to themselves in lower case
+        for name in list(self.nodes.keys()):
+            self.aliases[name.lower()] = name
+
+        # 3. Connect Graph Edges (Virtual Rails)
+        for n in self.nodes:
+            self.neighbors[n] = []
+
+        # Connect vertical aisles (for each x_aisle)
+        for x in x_aisles:
+            nodes_on_x = [n for n, (nx, ny) in self.nodes.items() if abs(nx - x) < 0.05]
+            nodes_on_x.sort(key=lambda n: self.nodes[n][1])
+            for i in range(len(nodes_on_x) - 1):
+                n1, n2 = nodes_on_x[i], nodes_on_x[i+1]
+                dist = math.hypot(self.nodes[n1][0] - self.nodes[n2][0], self.nodes[n1][1] - self.nodes[n2][1])
+                self.neighbors[n1].append((n2, dist))
+                self.neighbors[n2].append((n1, dist))
+
+        # Connect horizontal corridors (for each y_corridor)
+        for y in y_corridors:
+            intersections_on_y = [n for n, (nx, ny) in self.nodes.items() if n.startswith("Int_") and abs(ny - y) < 0.05]
+            intersections_on_y.sort(key=lambda n: self.nodes[n][0])
+            for i in range(len(intersections_on_y) - 1):
+                n1, n2 = intersections_on_y[i], intersections_on_y[i+1]
+                dist = math.hypot(self.nodes[n1][0] - self.nodes[n2][0], self.nodes[n1][1] - self.nodes[n2][1])
+                self.neighbors[n1].append((n2, dist))
+                self.neighbors[n2].append((n1, dist))
+
+    def resolve_node(self, target: Any) -> str:
+        """Resolve a semantic string name or (x, y) coordinate to a graph node_id."""
+        if isinstance(target, str):
+            clean = target.strip().lower()
+            if clean in self.aliases:
+                return self.aliases[clean]
+            for alias, nid in self.aliases.items():
+                if clean in alias or alias in clean:
+                    return nid
+            return self.find_nearest_node(13.0, 2.0)
+        elif isinstance(target, (list, tuple)) and len(target) >= 2:
+            return self.find_nearest_node(float(target[0]), float(target[1]))
+        return self.find_nearest_node(13.0, 2.0)
+
+    def get_coords(self, target: Any) -> Tuple[float, float]:
+        """Get (x, y) coordinates for target node or coordinate."""
+        if isinstance(target, (list, tuple)) and len(target) >= 2:
+            return (float(target[0]), float(target[1]))
+        nid = self.resolve_node(target)
+        return self.nodes.get(nid, (7.5, 7.5))
+
+    def find_nearest_node(self, x: float, y: float) -> str:
+        """Find graph node with minimum Euclidean distance to (x, y)."""
+        best_node = None
+        best_dist = float('inf')
+        for nid, (nx, ny) in self.nodes.items():
+            dist = (nx - x)**2 + (ny - y)**2
+            if dist < best_dist:
+                best_dist = dist
+                best_node = nid
+        return best_node or "Int_X13.5_Y1.5"
+
+
 class AStarPlanner:
     """
-    Lightweight 2D Grid A* Pathfinding Planner for 15x15m SIH Warehouse Map.
-    Grid resolution: 0.5 meters (30x30 cells).
-    Includes obstacle bounding box definitions for warehouse racks & trap zone.
+    Topological Graph A* Pathfinding Planner over WarehouseGraph (Virtual Rails).
+    Searches exclusively across connected WarehouseGraph nodes, not a 30x30 grid.
+    Guarantees AMRs stay centered in aisles to prevent corner clipping.
     """
-    def __init__(self, resolution: float = 0.5, map_size: float = 15.0):
-        self.res = resolution
-        self.size = map_size
-        self.grid_dim = int(map_size / resolution)
+    def __init__(self):
+        self.graph = WarehouseGraph()
 
-        # Hardcoded rack obstacle bounding boxes [xmin, xmax, ymin, ymax]
-        # (Includes 0.2m inflation margin for AMR footprint)
-        self.obstacles = [
-            # Row A Yellow Racks (y=10.0, pose: 1.5, 4.5, 7.5, 10.5)
-            [0.3, 2.7, 7.8, 12.2],
-            [3.3, 5.7, 7.8, 12.2],
-            [6.3, 8.7, 7.8, 12.2],
-            [9.3, 11.7, 7.8, 12.2],
-            
-            # Row B Blue Racks (y=5.0, pose: 1.5, 4.5, 7.5, 10.5)
-            [0.3, 2.7, 2.8, 7.2],
-            [3.3, 5.7, 2.8, 7.2],
-            [6.3, 8.7, 2.8, 7.2],
-            [9.3, 11.7, 2.8, 7.2],
+    def plan(self, start: Any, goal: Any) -> List[Tuple[float, float]]:
+        start_node = self.graph.resolve_node(start)
+        goal_node = self.graph.resolve_node(goal)
 
-            # Dead-End Trap Zone (pose 13.5 10.0, size 2x4 -> x:[12.5..14.5], y:[8.0..12.0])
-            [12.3, 14.7, 7.8, 12.2]
-        ]
+        goal_world_pos = None
+        if isinstance(goal, (list, tuple)) and len(goal) >= 2:
+            goal_world_pos = (float(goal[0]), float(goal[1]))
 
-    def _to_grid(self, x: float, y: float) -> Tuple[int, int]:
-        gx = max(0, min(self.grid_dim - 1, int(x / self.res)))
-        gy = max(0, min(self.grid_dim - 1, int(y / self.res)))
-        return (gx, gy)
+        if start_node == goal_node:
+            waypoints = [self.graph.nodes[start_node]]
+            if goal_world_pos:
+                waypoints.append(goal_world_pos)
+            return waypoints
 
-    def _to_world(self, gx: int, gy: int) -> Tuple[float, float]:
-        wx = (gx + 0.5) * self.res
-        wy = (gy + 0.5) * self.res
-        return (wx, wy)
-
-    def is_obstacle(self, gx: int, gy: int) -> bool:
-        wx, wy = self._to_world(gx, gy)
-        if wx < 0.4 or wx > (self.size - 0.4) or wy < 0.4 or wy > (self.size - 0.4):
-            return True
-        for ob in self.obstacles:
-            if ob[0] <= wx <= ob[1] and ob[2] <= wy <= ob[3]:
-                return True
-        return False
-
-    def plan(self, start_pos: Tuple[float, float], goal_pos: Tuple[float, float]) -> List[Tuple[float, float]]:
-        start_g = self._to_grid(start_pos[0], start_pos[1])
-        goal_g = self._to_grid(goal_pos[0], goal_pos[1])
-
-        if start_g == goal_g:
-            return [goal_pos]
-
+        # A* Search over graph nodes
         open_set = []
-        heapq.heappush(open_set, (0.0, 0.0, start_g))
-        came_from = {}
-        g_score = {start_g: 0.0}
+        heapq.heappush(open_set, (0.0, 0.0, start_node))
+        came_from: Dict[str, str] = {}
+        g_score: Dict[str, float] = {start_node: 0.0}
 
-        def heuristic(a, b):
-            dx = abs(a[0] - b[0])
-            dy = abs(a[1] - b[1])
-            return math.sqrt(dx * dx + dy * dy)
-
-        moves = [
-            (1, 0, 1.0), (-1, 0, 1.0), (0, 1, 1.0), (0, -1, 1.0),
-            (1, 1, 1.414), (1, -1, 1.414), (-1, 1, 1.414), (-1, -1, 1.414)
-        ]
-
-        closest_node = start_g
-        closest_dist = heuristic(start_g, goal_g)
+        def heuristic(n1: str, n2: str) -> float:
+            p1 = self.graph.nodes[n1]
+            p2 = self.graph.nodes[n2]
+            return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
         while open_set:
             _, current_g, current = heapq.heappop(open_set)
 
-            if current == goal_g:
-                closest_node = goal_g
+            if current == goal_node:
                 break
 
-            h_dist = heuristic(current, goal_g)
-            if h_dist < closest_dist:
-                closest_dist = h_dist
-                closest_node = current
-
-            for dx, dy, cost in moves:
-                neighbor = (current[0] + dx, current[1] + dy)
-                if not (0 <= neighbor[0] < self.grid_dim and 0 <= neighbor[1] < self.grid_dim):
-                    continue
-                if self.is_obstacle(neighbor[0], neighbor[1]) and neighbor != goal_g:
-                    continue
-
+            for neighbor, cost in self.graph.neighbors.get(current, []):
                 tentative_g = current_g + cost
                 if neighbor not in g_score or tentative_g < g_score[neighbor]:
                     g_score[neighbor] = tentative_g
-                    f_score = tentative_g + heuristic(neighbor, goal_g)
+                    f_score = tentative_g + heuristic(neighbor, goal_node)
                     came_from[neighbor] = current
                     heapq.heappush(open_set, (f_score, tentative_g, neighbor))
 
-        path_grid = []
-        curr = closest_node
-        while curr in came_from:
-            path_grid.append(curr)
-            curr = came_from[curr]
-        path_grid.append(start_g)
-        path_grid.reverse()
+        # Reconstruct path
+        path_nodes = []
+        curr = goal_node if goal_node in came_from or goal_node == start_node else None
+        if not curr:
+            curr = min(g_score.keys(), key=lambda n: heuristic(n, goal_node))
 
-        waypoints = [self._to_world(gx, gy) for gx, gy in path_grid]
-        waypoints.append(goal_pos)
+        while curr and curr in came_from:
+            path_nodes.append(curr)
+            curr = came_from[curr]
+        if curr:
+            path_nodes.append(curr)
+        path_nodes.reverse()
+
+        waypoints = [self.graph.nodes[nid] for nid in path_nodes]
+
+        if goal_world_pos and (not waypoints or math.hypot(waypoints[-1][0] - goal_world_pos[0], waypoints[-1][1] - goal_world_pos[1]) > 0.1):
+            waypoints.append(goal_world_pos)
+
         return waypoints
 
 
@@ -190,7 +282,7 @@ class TaskManagerNode(Node):
         # States: IDLE, CLAIMED, EN_ROUTE_PICKUP, DELIVERING, COMPLETED, HANDOFF
         self._state: str = "IDLE"
         self._current_task: Optional[Dict[str, Any]] = None
-        self._planner = AStarPlanner(resolution=0.5, map_size=15.0)
+        self._planner = AStarPlanner()
         self._waypoints: List[Tuple[float, float]] = []
 
         # Position tracking from Odom
@@ -372,10 +464,11 @@ class TaskManagerNode(Node):
             return
 
         task_id = data.get("task_id")
-        pickup = data.get("pickup", [0.0, 0.0])
+        pickup_raw = data.get("pickup", [0.0, 0.0])
+        pickup_coords = self._planner.graph.get_coords(pickup_raw)
 
-        dx = pickup[0] - self._pos_x
-        dy = pickup[1] - self._pos_y
+        dx = pickup_coords[0] - self._pos_x
+        dy = pickup_coords[1] - self._pos_y
         dist_m = math.sqrt(dx * dx + dy * dy)
 
         # Broadcast CLAIM for this task
@@ -495,18 +588,18 @@ class TaskManagerNode(Node):
         elif self._state == "CLAIMED":
             pickup = self._current_task.get("pickup", [self._pos_x, self._pos_y])
             self.get_logger().info(
-                f"[{self._robot_id}] Planning A* path to pickup {pickup} for '{self._current_task.get('task_id')}'"
+                f"[{self._robot_id}] Planning Topological Graph A* path to pickup '{pickup}' for '{self._current_task.get('task_id')}'"
             )
-            self._waypoints = self._planner.plan((self._pos_x, self._pos_y), (pickup[0], pickup[1]))
+            self._waypoints = self._planner.plan((self._pos_x, self._pos_y), pickup)
             self._state = "EN_ROUTE_PICKUP"
 
         elif self._state == "EN_ROUTE_PICKUP":
             if not self._waypoints:
                 self.get_logger().info(
-                    f"[{self._robot_id}] Pickup reached for '{self._current_task.get('task_id')}'. Planning A* path to dropoff..."
+                    f"[{self._robot_id}] Pickup reached for '{self._current_task.get('task_id')}'. Planning Topological Graph A* path to dropoff..."
                 )
                 dropoff = self._current_task.get("dropoff", [self._pos_x, self._pos_y])
-                self._waypoints = self._planner.plan((self._pos_x, self._pos_y), (dropoff[0], dropoff[1]))
+                self._waypoints = self._planner.plan((self._pos_x, self._pos_y), dropoff)
                 self._state = "DELIVERING"
             else:
                 target_wp = self._waypoints[0]
