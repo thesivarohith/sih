@@ -65,9 +65,9 @@ class WarehouseGraph:
     def _build_graph(self):
         # Centerline coordinates for virtual rails
         # Vertical Aisles (X)
-        x_aisles = [-0.75, 0.0, 3.0, 6.0, 9.0, 11.0, 12.0, 12.5, 13.0, 14.0]
+        x_aisles = [-0.75, 0.0, 3.0, 3.5, 6.5, 7.0, 10.0, 10.5, 13.5, 14.5]
         # Horizontal Corridors (Y)
-        y_corridors = [2.5, 5.0, 7.5, 12.5, 13.5]
+        y_corridors = [2.0, 4.5, 7.0, 7.5, 10.0, 12.5, 13.5]
 
         # 1. Intersection Nodes
         for x in x_aisles:
@@ -78,14 +78,14 @@ class WarehouseGraph:
         # 2. Racks & 10 Parking Bays per Rack (Equidistant 0.5m from rack bounds)
         racks = [
             ("Rack_Yellow_1", "Rack_1A", 1.5, 10.0),
-            ("Rack_Yellow_2", "Rack_2A", 4.5, 10.0),
-            ("Rack_Yellow_3", "Rack_3A", 7.5, 10.0),
-            ("Rack_Yellow_4", "Rack_4A", 10.5, 10.0),
+            ("Rack_Yellow_2", "Rack_2A", 5.0, 10.0),
+            ("Rack_Yellow_3", "Rack_3A", 8.5, 10.0),
+            ("Rack_Yellow_4", "Rack_4A", 12.0, 10.0),
 
-            ("Rack_Blue_1", "Rack_1B", 1.5, 5.0),
-            ("Rack_Blue_2", "Rack_2B", 4.5, 5.0),
-            ("Rack_Blue_3", "Rack_3B", 7.5, 5.0),
-            ("Rack_Blue_4", "Rack_4B", 10.5, 5.0),
+            ("Rack_Blue_1", "Rack_1B", 1.5, 4.5),
+            ("Rack_Blue_2", "Rack_2B", 5.0, 4.5),
+            ("Rack_Blue_3", "Rack_3B", 8.5, 4.5),
+            ("Rack_Blue_4", "Rack_4B", 12.0, 4.5),
         ]
 
         for rack_name, rack_alias, cx, cy in racks:

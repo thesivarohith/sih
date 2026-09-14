@@ -150,7 +150,7 @@
     </model>
     <model name="rack_2A">
       <static>true</static>
-      <pose>4.5 10.0 0.75 0 0 0</pose>
+      <pose>5.0 10.0 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -165,7 +165,7 @@
     </model>
     <model name="rack_3A">
       <static>true</static>
-      <pose>7.5 10.0 0.75 0 0 0</pose>
+      <pose>8.5 10.0 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -180,7 +180,7 @@
     </model>
     <model name="rack_4A">
       <static>true</static>
-      <pose>10.5 10.0 0.75 0 0 0</pose>
+      <pose>12.0 10.0 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -197,7 +197,7 @@
     <!-- ===================== Row B Racks — Industrial Steel Blue ===================== -->
     <model name="rack_1B">
       <static>true</static>
-      <pose>1.5 5.0 0.75 0 0 0</pose>
+      <pose>1.5 4.5 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -212,7 +212,7 @@
     </model>
     <model name="rack_2B">
       <static>true</static>
-      <pose>4.5 5.0 0.75 0 0 0</pose>
+      <pose>5.0 4.5 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -227,7 +227,7 @@
     </model>
     <model name="rack_3B">
       <static>true</static>
-      <pose>7.5 5.0 0.75 0 0 0</pose>
+      <pose>8.5 4.5 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -242,7 +242,7 @@
     </model>
     <model name="rack_4B">
       <static>true</static>
-      <pose>10.5 5.0 0.75 0 0 0</pose>
+      <pose>12.0 4.5 0.75 0 0 0</pose>
       <link name="link">
         <collision name="col"><geometry><box><size>2 4 1.5</size></box></geometry></collision>
         <visual name="vis">
@@ -275,10 +275,11 @@
 
   
       
+
     <!-- ===================== Visual Topological Graph Floor Markers (Green Dots - NO COLLISION) ===================== -->
     <model name="vis_node_0">
       <static>true</static>
-      <pose>-0.75 2.5 0.005 0 0 0</pose>
+      <pose>-0.75 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -292,7 +293,7 @@
     </model>
     <model name="vis_node_1">
       <static>true</static>
-      <pose>-0.75 5.0 0.005 0 0 0</pose>
+      <pose>-0.75 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -306,7 +307,7 @@
     </model>
     <model name="vis_node_2">
       <static>true</static>
-      <pose>-0.75 7.5 0.005 0 0 0</pose>
+      <pose>-0.75 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -320,7 +321,7 @@
     </model>
     <model name="vis_node_3">
       <static>true</static>
-      <pose>-0.75 12.5 0.005 0 0 0</pose>
+      <pose>-0.75 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -334,7 +335,7 @@
     </model>
     <model name="vis_node_4">
       <static>true</static>
-      <pose>0.0 2.5 0.005 0 0 0</pose>
+      <pose>-0.75 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -348,7 +349,7 @@
     </model>
     <model name="vis_node_5">
       <static>true</static>
-      <pose>0.0 5.0 0.005 0 0 0</pose>
+      <pose>-0.75 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -362,7 +363,7 @@
     </model>
     <model name="vis_node_6">
       <static>true</static>
-      <pose>0.0 7.5 0.005 0 0 0</pose>
+      <pose>-0.75 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -376,7 +377,7 @@
     </model>
     <model name="vis_node_7">
       <static>true</static>
-      <pose>0.0 12.5 0.005 0 0 0</pose>
+      <pose>0.0 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -390,7 +391,7 @@
     </model>
     <model name="vis_node_8">
       <static>true</static>
-      <pose>3.0 2.5 0.005 0 0 0</pose>
+      <pose>0.0 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -404,7 +405,7 @@
     </model>
     <model name="vis_node_9">
       <static>true</static>
-      <pose>3.0 5.0 0.005 0 0 0</pose>
+      <pose>0.0 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -418,7 +419,7 @@
     </model>
     <model name="vis_node_10">
       <static>true</static>
-      <pose>3.0 7.5 0.005 0 0 0</pose>
+      <pose>0.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -432,7 +433,7 @@
     </model>
     <model name="vis_node_11">
       <static>true</static>
-      <pose>3.0 12.5 0.005 0 0 0</pose>
+      <pose>0.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -446,7 +447,7 @@
     </model>
     <model name="vis_node_12">
       <static>true</static>
-      <pose>6.0 2.5 0.005 0 0 0</pose>
+      <pose>0.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -460,7 +461,7 @@
     </model>
     <model name="vis_node_13">
       <static>true</static>
-      <pose>6.0 5.0 0.005 0 0 0</pose>
+      <pose>0.0 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -474,7 +475,7 @@
     </model>
     <model name="vis_node_14">
       <static>true</static>
-      <pose>6.0 7.5 0.005 0 0 0</pose>
+      <pose>3.0 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -488,7 +489,7 @@
     </model>
     <model name="vis_node_15">
       <static>true</static>
-      <pose>6.0 12.5 0.005 0 0 0</pose>
+      <pose>3.0 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -502,7 +503,7 @@
     </model>
     <model name="vis_node_16">
       <static>true</static>
-      <pose>9.0 2.5 0.005 0 0 0</pose>
+      <pose>3.0 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -516,7 +517,7 @@
     </model>
     <model name="vis_node_17">
       <static>true</static>
-      <pose>9.0 5.0 0.005 0 0 0</pose>
+      <pose>3.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -530,7 +531,7 @@
     </model>
     <model name="vis_node_18">
       <static>true</static>
-      <pose>9.0 7.5 0.005 0 0 0</pose>
+      <pose>3.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -544,7 +545,7 @@
     </model>
     <model name="vis_node_19">
       <static>true</static>
-      <pose>9.0 12.5 0.005 0 0 0</pose>
+      <pose>3.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -558,7 +559,7 @@
     </model>
     <model name="vis_node_20">
       <static>true</static>
-      <pose>12.0 2.5 0.005 0 0 0</pose>
+      <pose>3.0 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -572,7 +573,7 @@
     </model>
     <model name="vis_node_21">
       <static>true</static>
-      <pose>12.0 5.0 0.005 0 0 0</pose>
+      <pose>3.5 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -586,7 +587,7 @@
     </model>
     <model name="vis_node_22">
       <static>true</static>
-      <pose>12.0 7.5 0.005 0 0 0</pose>
+      <pose>3.5 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -600,7 +601,7 @@
     </model>
     <model name="vis_node_23">
       <static>true</static>
-      <pose>12.0 12.5 0.005 0 0 0</pose>
+      <pose>3.5 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -614,7 +615,7 @@
     </model>
     <model name="vis_node_24">
       <static>true</static>
-      <pose>0.0 11.2 0.005 0 0 0</pose>
+      <pose>3.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -628,7 +629,7 @@
     </model>
     <model name="vis_node_25">
       <static>true</static>
-      <pose>0.0 10.0 0.005 0 0 0</pose>
+      <pose>3.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -642,7 +643,7 @@
     </model>
     <model name="vis_node_26">
       <static>true</static>
-      <pose>0.0 8.8 0.005 0 0 0</pose>
+      <pose>3.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -656,7 +657,7 @@
     </model>
     <model name="vis_node_27">
       <static>true</static>
-      <pose>1.0 7.5 0.005 0 0 0</pose>
+      <pose>3.5 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -670,7 +671,7 @@
     </model>
     <model name="vis_node_28">
       <static>true</static>
-      <pose>2.0 7.5 0.005 0 0 0</pose>
+      <pose>6.5 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -684,7 +685,7 @@
     </model>
     <model name="vis_node_29">
       <static>true</static>
-      <pose>3.0 8.8 0.005 0 0 0</pose>
+      <pose>6.5 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -698,7 +699,7 @@
     </model>
     <model name="vis_node_30">
       <static>true</static>
-      <pose>3.0 10.0 0.005 0 0 0</pose>
+      <pose>6.5 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -712,7 +713,7 @@
     </model>
     <model name="vis_node_31">
       <static>true</static>
-      <pose>3.0 11.2 0.005 0 0 0</pose>
+      <pose>6.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -726,7 +727,7 @@
     </model>
     <model name="vis_node_32">
       <static>true</static>
-      <pose>2.0 12.5 0.005 0 0 0</pose>
+      <pose>6.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -740,7 +741,7 @@
     </model>
     <model name="vis_node_33">
       <static>true</static>
-      <pose>1.0 12.5 0.005 0 0 0</pose>
+      <pose>6.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -754,7 +755,7 @@
     </model>
     <model name="vis_node_34">
       <static>true</static>
-      <pose>3.0 11.2 0.005 0 0 0</pose>
+      <pose>6.5 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -768,7 +769,7 @@
     </model>
     <model name="vis_node_35">
       <static>true</static>
-      <pose>3.0 10.0 0.005 0 0 0</pose>
+      <pose>7.0 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -782,7 +783,7 @@
     </model>
     <model name="vis_node_36">
       <static>true</static>
-      <pose>3.0 8.8 0.005 0 0 0</pose>
+      <pose>7.0 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -796,7 +797,7 @@
     </model>
     <model name="vis_node_37">
       <static>true</static>
-      <pose>4.0 7.5 0.005 0 0 0</pose>
+      <pose>7.0 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -810,7 +811,7 @@
     </model>
     <model name="vis_node_38">
       <static>true</static>
-      <pose>5.0 7.5 0.005 0 0 0</pose>
+      <pose>7.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -824,7 +825,7 @@
     </model>
     <model name="vis_node_39">
       <static>true</static>
-      <pose>6.0 8.8 0.005 0 0 0</pose>
+      <pose>7.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -838,7 +839,7 @@
     </model>
     <model name="vis_node_40">
       <static>true</static>
-      <pose>6.0 10.0 0.005 0 0 0</pose>
+      <pose>7.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -852,7 +853,7 @@
     </model>
     <model name="vis_node_41">
       <static>true</static>
-      <pose>6.0 11.2 0.005 0 0 0</pose>
+      <pose>7.0 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -866,7 +867,7 @@
     </model>
     <model name="vis_node_42">
       <static>true</static>
-      <pose>5.0 12.5 0.005 0 0 0</pose>
+      <pose>10.0 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -880,7 +881,7 @@
     </model>
     <model name="vis_node_43">
       <static>true</static>
-      <pose>4.0 12.5 0.005 0 0 0</pose>
+      <pose>10.0 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -894,7 +895,7 @@
     </model>
     <model name="vis_node_44">
       <static>true</static>
-      <pose>6.0 11.2 0.005 0 0 0</pose>
+      <pose>10.0 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -908,7 +909,7 @@
     </model>
     <model name="vis_node_45">
       <static>true</static>
-      <pose>6.0 10.0 0.005 0 0 0</pose>
+      <pose>10.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -922,7 +923,7 @@
     </model>
     <model name="vis_node_46">
       <static>true</static>
-      <pose>6.0 8.8 0.005 0 0 0</pose>
+      <pose>10.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -936,7 +937,7 @@
     </model>
     <model name="vis_node_47">
       <static>true</static>
-      <pose>7.0 7.5 0.005 0 0 0</pose>
+      <pose>10.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -950,7 +951,7 @@
     </model>
     <model name="vis_node_48">
       <static>true</static>
-      <pose>8.0 7.5 0.005 0 0 0</pose>
+      <pose>10.0 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -964,7 +965,7 @@
     </model>
     <model name="vis_node_49">
       <static>true</static>
-      <pose>9.0 8.8 0.005 0 0 0</pose>
+      <pose>10.5 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -978,7 +979,7 @@
     </model>
     <model name="vis_node_50">
       <static>true</static>
-      <pose>9.0 10.0 0.005 0 0 0</pose>
+      <pose>10.5 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -992,7 +993,7 @@
     </model>
     <model name="vis_node_51">
       <static>true</static>
-      <pose>9.0 11.2 0.005 0 0 0</pose>
+      <pose>10.5 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1006,7 +1007,7 @@
     </model>
     <model name="vis_node_52">
       <static>true</static>
-      <pose>8.0 12.5 0.005 0 0 0</pose>
+      <pose>10.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1020,7 +1021,7 @@
     </model>
     <model name="vis_node_53">
       <static>true</static>
-      <pose>7.0 12.5 0.005 0 0 0</pose>
+      <pose>10.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1034,7 +1035,7 @@
     </model>
     <model name="vis_node_54">
       <static>true</static>
-      <pose>9.0 11.2 0.005 0 0 0</pose>
+      <pose>10.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1048,7 +1049,7 @@
     </model>
     <model name="vis_node_55">
       <static>true</static>
-      <pose>9.0 10.0 0.005 0 0 0</pose>
+      <pose>10.5 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1062,7 +1063,7 @@
     </model>
     <model name="vis_node_56">
       <static>true</static>
-      <pose>9.0 8.8 0.005 0 0 0</pose>
+      <pose>13.5 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1076,7 +1077,7 @@
     </model>
     <model name="vis_node_57">
       <static>true</static>
-      <pose>10.0 7.5 0.005 0 0 0</pose>
+      <pose>13.5 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1090,7 +1091,7 @@
     </model>
     <model name="vis_node_58">
       <static>true</static>
-      <pose>11.0 7.5 0.005 0 0 0</pose>
+      <pose>13.5 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1104,7 +1105,7 @@
     </model>
     <model name="vis_node_59">
       <static>true</static>
-      <pose>12.0 8.8 0.005 0 0 0</pose>
+      <pose>13.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1118,7 +1119,7 @@
     </model>
     <model name="vis_node_60">
       <static>true</static>
-      <pose>12.0 10.0 0.005 0 0 0</pose>
+      <pose>13.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1132,7 +1133,7 @@
     </model>
     <model name="vis_node_61">
       <static>true</static>
-      <pose>12.0 11.2 0.005 0 0 0</pose>
+      <pose>13.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1146,7 +1147,7 @@
     </model>
     <model name="vis_node_62">
       <static>true</static>
-      <pose>11.0 12.5 0.005 0 0 0</pose>
+      <pose>13.5 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1160,7 +1161,7 @@
     </model>
     <model name="vis_node_63">
       <static>true</static>
-      <pose>10.0 12.5 0.005 0 0 0</pose>
+      <pose>14.5 2.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1174,7 +1175,7 @@
     </model>
     <model name="vis_node_64">
       <static>true</static>
-      <pose>0.0 6.2 0.005 0 0 0</pose>
+      <pose>14.5 4.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1188,7 +1189,7 @@
     </model>
     <model name="vis_node_65">
       <static>true</static>
-      <pose>0.0 5.0 0.005 0 0 0</pose>
+      <pose>14.5 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1202,7 +1203,7 @@
     </model>
     <model name="vis_node_66">
       <static>true</static>
-      <pose>0.0 3.8 0.005 0 0 0</pose>
+      <pose>14.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1216,7 +1217,7 @@
     </model>
     <model name="vis_node_67">
       <static>true</static>
-      <pose>1.0 2.5 0.005 0 0 0</pose>
+      <pose>14.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1230,7 +1231,7 @@
     </model>
     <model name="vis_node_68">
       <static>true</static>
-      <pose>2.0 2.5 0.005 0 0 0</pose>
+      <pose>14.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1244,7 +1245,7 @@
     </model>
     <model name="vis_node_69">
       <static>true</static>
-      <pose>3.0 3.8 0.005 0 0 0</pose>
+      <pose>14.5 13.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1258,7 +1259,7 @@
     </model>
     <model name="vis_node_70">
       <static>true</static>
-      <pose>3.0 5.0 0.005 0 0 0</pose>
+      <pose>0.0 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1272,7 +1273,7 @@
     </model>
     <model name="vis_node_71">
       <static>true</static>
-      <pose>3.0 6.2 0.005 0 0 0</pose>
+      <pose>0.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1286,7 +1287,7 @@
     </model>
     <model name="vis_node_72">
       <static>true</static>
-      <pose>2.0 7.5 0.005 0 0 0</pose>
+      <pose>0.0 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1314,7 +1315,7 @@
     </model>
     <model name="vis_node_74">
       <static>true</static>
-      <pose>3.0 6.2 0.005 0 0 0</pose>
+      <pose>2.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1328,7 +1329,7 @@
     </model>
     <model name="vis_node_75">
       <static>true</static>
-      <pose>3.0 5.0 0.005 0 0 0</pose>
+      <pose>3.0 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1342,7 +1343,7 @@
     </model>
     <model name="vis_node_76">
       <static>true</static>
-      <pose>3.0 3.8 0.005 0 0 0</pose>
+      <pose>3.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1356,7 +1357,7 @@
     </model>
     <model name="vis_node_77">
       <static>true</static>
-      <pose>4.0 2.5 0.005 0 0 0</pose>
+      <pose>3.0 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1370,7 +1371,7 @@
     </model>
     <model name="vis_node_78">
       <static>true</static>
-      <pose>5.0 2.5 0.005 0 0 0</pose>
+      <pose>2.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1384,7 +1385,7 @@
     </model>
     <model name="vis_node_79">
       <static>true</static>
-      <pose>6.0 3.8 0.005 0 0 0</pose>
+      <pose>1.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1398,7 +1399,7 @@
     </model>
     <model name="vis_node_80">
       <static>true</static>
-      <pose>6.0 5.0 0.005 0 0 0</pose>
+      <pose>3.5 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1412,7 +1413,7 @@
     </model>
     <model name="vis_node_81">
       <static>true</static>
-      <pose>6.0 6.2 0.005 0 0 0</pose>
+      <pose>3.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1426,7 +1427,7 @@
     </model>
     <model name="vis_node_82">
       <static>true</static>
-      <pose>5.0 7.5 0.005 0 0 0</pose>
+      <pose>3.5 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1440,7 +1441,7 @@
     </model>
     <model name="vis_node_83">
       <static>true</static>
-      <pose>4.0 7.5 0.005 0 0 0</pose>
+      <pose>4.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1454,7 +1455,7 @@
     </model>
     <model name="vis_node_84">
       <static>true</static>
-      <pose>6.0 6.2 0.005 0 0 0</pose>
+      <pose>5.5 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1468,7 +1469,7 @@
     </model>
     <model name="vis_node_85">
       <static>true</static>
-      <pose>6.0 5.0 0.005 0 0 0</pose>
+      <pose>6.5 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1482,7 +1483,7 @@
     </model>
     <model name="vis_node_86">
       <static>true</static>
-      <pose>6.0 3.8 0.005 0 0 0</pose>
+      <pose>6.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1496,7 +1497,7 @@
     </model>
     <model name="vis_node_87">
       <static>true</static>
-      <pose>7.0 2.5 0.005 0 0 0</pose>
+      <pose>6.5 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1510,7 +1511,7 @@
     </model>
     <model name="vis_node_88">
       <static>true</static>
-      <pose>8.0 2.5 0.005 0 0 0</pose>
+      <pose>5.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1524,7 +1525,7 @@
     </model>
     <model name="vis_node_89">
       <static>true</static>
-      <pose>9.0 3.8 0.005 0 0 0</pose>
+      <pose>4.5 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1538,7 +1539,7 @@
     </model>
     <model name="vis_node_90">
       <static>true</static>
-      <pose>9.0 5.0 0.005 0 0 0</pose>
+      <pose>7.0 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1552,7 +1553,7 @@
     </model>
     <model name="vis_node_91">
       <static>true</static>
-      <pose>9.0 6.2 0.005 0 0 0</pose>
+      <pose>7.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1566,7 +1567,7 @@
     </model>
     <model name="vis_node_92">
       <static>true</static>
-      <pose>8.0 7.5 0.005 0 0 0</pose>
+      <pose>7.0 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1580,7 +1581,7 @@
     </model>
     <model name="vis_node_93">
       <static>true</static>
-      <pose>7.0 7.5 0.005 0 0 0</pose>
+      <pose>8.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1594,7 +1595,7 @@
     </model>
     <model name="vis_node_94">
       <static>true</static>
-      <pose>9.0 6.2 0.005 0 0 0</pose>
+      <pose>9.0 7.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1608,7 +1609,7 @@
     </model>
     <model name="vis_node_95">
       <static>true</static>
-      <pose>9.0 5.0 0.005 0 0 0</pose>
+      <pose>10.0 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1622,7 +1623,7 @@
     </model>
     <model name="vis_node_96">
       <static>true</static>
-      <pose>9.0 3.8 0.005 0 0 0</pose>
+      <pose>10.0 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1636,7 +1637,7 @@
     </model>
     <model name="vis_node_97">
       <static>true</static>
-      <pose>10.0 2.5 0.005 0 0 0</pose>
+      <pose>10.0 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1650,7 +1651,7 @@
     </model>
     <model name="vis_node_98">
       <static>true</static>
-      <pose>11.0 2.5 0.005 0 0 0</pose>
+      <pose>9.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1664,7 +1665,7 @@
     </model>
     <model name="vis_node_99">
       <static>true</static>
-      <pose>12.0 3.8 0.005 0 0 0</pose>
+      <pose>8.0 12.5 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1678,7 +1679,7 @@
     </model>
     <model name="vis_node_100">
       <static>true</static>
-      <pose>12.0 5.0 0.005 0 0 0</pose>
+      <pose>10.5 11.2 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1692,7 +1693,7 @@
     </model>
     <model name="vis_node_101">
       <static>true</static>
-      <pose>12.0 6.2 0.005 0 0 0</pose>
+      <pose>10.5 10.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1706,7 +1707,7 @@
     </model>
     <model name="vis_node_102">
       <static>true</static>
-      <pose>11.0 7.5 0.005 0 0 0</pose>
+      <pose>10.5 8.8 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1720,7 +1721,651 @@
     </model>
     <model name="vis_node_103">
       <static>true</static>
-      <pose>10.0 7.5 0.005 0 0 0</pose>
+      <pose>11.5 7.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_104">
+      <static>true</static>
+      <pose>12.5 7.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_105">
+      <static>true</static>
+      <pose>13.5 8.8 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_106">
+      <static>true</static>
+      <pose>13.5 10.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_107">
+      <static>true</static>
+      <pose>13.5 11.2 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_108">
+      <static>true</static>
+      <pose>12.5 12.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_109">
+      <static>true</static>
+      <pose>11.5 12.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_110">
+      <static>true</static>
+      <pose>0.0 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_111">
+      <static>true</static>
+      <pose>0.0 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_112">
+      <static>true</static>
+      <pose>0.0 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_113">
+      <static>true</static>
+      <pose>1.0 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_114">
+      <static>true</static>
+      <pose>2.0 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_115">
+      <static>true</static>
+      <pose>3.0 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_116">
+      <static>true</static>
+      <pose>3.0 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_117">
+      <static>true</static>
+      <pose>3.0 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_118">
+      <static>true</static>
+      <pose>2.0 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_119">
+      <static>true</static>
+      <pose>1.0 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_120">
+      <static>true</static>
+      <pose>3.5 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_121">
+      <static>true</static>
+      <pose>3.5 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_122">
+      <static>true</static>
+      <pose>3.5 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_123">
+      <static>true</static>
+      <pose>4.5 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_124">
+      <static>true</static>
+      <pose>5.5 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_125">
+      <static>true</static>
+      <pose>6.5 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_126">
+      <static>true</static>
+      <pose>6.5 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_127">
+      <static>true</static>
+      <pose>6.5 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_128">
+      <static>true</static>
+      <pose>5.5 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_129">
+      <static>true</static>
+      <pose>4.5 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_130">
+      <static>true</static>
+      <pose>7.0 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_131">
+      <static>true</static>
+      <pose>7.0 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_132">
+      <static>true</static>
+      <pose>7.0 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_133">
+      <static>true</static>
+      <pose>8.0 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_134">
+      <static>true</static>
+      <pose>9.0 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_135">
+      <static>true</static>
+      <pose>10.0 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_136">
+      <static>true</static>
+      <pose>10.0 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_137">
+      <static>true</static>
+      <pose>10.0 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_138">
+      <static>true</static>
+      <pose>9.0 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_139">
+      <static>true</static>
+      <pose>8.0 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_140">
+      <static>true</static>
+      <pose>10.5 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_141">
+      <static>true</static>
+      <pose>10.5 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_142">
+      <static>true</static>
+      <pose>10.5 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_143">
+      <static>true</static>
+      <pose>11.5 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_144">
+      <static>true</static>
+      <pose>12.5 2.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_145">
+      <static>true</static>
+      <pose>13.5 3.3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_146">
+      <static>true</static>
+      <pose>13.5 4.5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_147">
+      <static>true</static>
+      <pose>13.5 5.7 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_148">
+      <static>true</static>
+      <pose>12.5 7.0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.8 0.3 1</ambient>
+            <diffuse>0.0 1.0 0.4 1</diffuse>
+            <emissive>0.0 0.4 0.15 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="vis_node_149">
+      <static>true</static>
+      <pose>11.5 7.0 0.005 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><cylinder><radius>0.12</radius><length>0.005</length></cylinder></geometry>
@@ -1796,7 +2441,7 @@
     </model>
     <model name="vis_div_6">
       <static>true</static>
-      <pose>3.49 9.33 0.75 0 0 0</pose>
+      <pose>3.99 9.33 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1806,7 +2451,7 @@
     </model>
     <model name="vis_div_7">
       <static>true</static>
-      <pose>3.49 10.67 0.75 0 0 0</pose>
+      <pose>3.99 10.67 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1816,7 +2461,7 @@
     </model>
     <model name="vis_div_8">
       <static>true</static>
-      <pose>4.5 7.99 0.75 0 0 0</pose>
+      <pose>5.0 7.99 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1826,7 +2471,7 @@
     </model>
     <model name="vis_div_9">
       <static>true</static>
-      <pose>5.51 9.33 0.75 0 0 0</pose>
+      <pose>6.01 9.33 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1836,7 +2481,7 @@
     </model>
     <model name="vis_div_10">
       <static>true</static>
-      <pose>5.51 10.67 0.75 0 0 0</pose>
+      <pose>6.01 10.67 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1846,7 +2491,7 @@
     </model>
     <model name="vis_div_11">
       <static>true</static>
-      <pose>4.5 12.01 0.75 0 0 0</pose>
+      <pose>5.0 12.01 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1856,7 +2501,7 @@
     </model>
     <model name="vis_div_12">
       <static>true</static>
-      <pose>6.49 9.33 0.75 0 0 0</pose>
+      <pose>7.49 9.33 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1866,7 +2511,7 @@
     </model>
     <model name="vis_div_13">
       <static>true</static>
-      <pose>6.49 10.67 0.75 0 0 0</pose>
+      <pose>7.49 10.67 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1876,7 +2521,7 @@
     </model>
     <model name="vis_div_14">
       <static>true</static>
-      <pose>7.5 7.99 0.75 0 0 0</pose>
+      <pose>8.5 7.99 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1886,7 +2531,7 @@
     </model>
     <model name="vis_div_15">
       <static>true</static>
-      <pose>8.51 9.33 0.75 0 0 0</pose>
+      <pose>9.51 9.33 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1896,7 +2541,7 @@
     </model>
     <model name="vis_div_16">
       <static>true</static>
-      <pose>8.51 10.67 0.75 0 0 0</pose>
+      <pose>9.51 10.67 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1906,7 +2551,7 @@
     </model>
     <model name="vis_div_17">
       <static>true</static>
-      <pose>7.5 12.01 0.75 0 0 0</pose>
+      <pose>8.5 12.01 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1916,7 +2561,7 @@
     </model>
     <model name="vis_div_18">
       <static>true</static>
-      <pose>9.49 9.33 0.75 0 0 0</pose>
+      <pose>10.99 9.33 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1926,7 +2571,7 @@
     </model>
     <model name="vis_div_19">
       <static>true</static>
-      <pose>9.49 10.67 0.75 0 0 0</pose>
+      <pose>10.99 10.67 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1936,7 +2581,7 @@
     </model>
     <model name="vis_div_20">
       <static>true</static>
-      <pose>10.5 7.99 0.75 0 0 0</pose>
+      <pose>12.0 7.99 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1946,7 +2591,7 @@
     </model>
     <model name="vis_div_21">
       <static>true</static>
-      <pose>11.51 9.33 0.75 0 0 0</pose>
+      <pose>13.01 9.33 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1956,7 +2601,7 @@
     </model>
     <model name="vis_div_22">
       <static>true</static>
-      <pose>11.51 10.67 0.75 0 0 0</pose>
+      <pose>13.01 10.67 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1966,7 +2611,7 @@
     </model>
     <model name="vis_div_23">
       <static>true</static>
-      <pose>10.5 12.01 0.75 0 0 0</pose>
+      <pose>12.0 12.01 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1976,7 +2621,7 @@
     </model>
     <model name="vis_div_24">
       <static>true</static>
-      <pose>0.49 4.33 0.75 0 0 0</pose>
+      <pose>0.49 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1986,7 +2631,7 @@
     </model>
     <model name="vis_div_25">
       <static>true</static>
-      <pose>0.49 5.67 0.75 0 0 0</pose>
+      <pose>0.49 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -1996,7 +2641,7 @@
     </model>
     <model name="vis_div_26">
       <static>true</static>
-      <pose>1.5 2.99 0.75 0 0 0</pose>
+      <pose>1.5 2.49 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2006,7 +2651,7 @@
     </model>
     <model name="vis_div_27">
       <static>true</static>
-      <pose>2.51 4.33 0.75 0 0 0</pose>
+      <pose>2.51 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2016,7 +2661,7 @@
     </model>
     <model name="vis_div_28">
       <static>true</static>
-      <pose>2.51 5.67 0.75 0 0 0</pose>
+      <pose>2.51 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2026,7 +2671,7 @@
     </model>
     <model name="vis_div_29">
       <static>true</static>
-      <pose>1.5 7.01 0.75 0 0 0</pose>
+      <pose>1.5 6.51 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2036,7 +2681,7 @@
     </model>
     <model name="vis_div_30">
       <static>true</static>
-      <pose>3.49 4.33 0.75 0 0 0</pose>
+      <pose>3.99 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2046,7 +2691,7 @@
     </model>
     <model name="vis_div_31">
       <static>true</static>
-      <pose>3.49 5.67 0.75 0 0 0</pose>
+      <pose>3.99 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2056,7 +2701,7 @@
     </model>
     <model name="vis_div_32">
       <static>true</static>
-      <pose>4.5 2.99 0.75 0 0 0</pose>
+      <pose>5.0 2.49 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2066,7 +2711,7 @@
     </model>
     <model name="vis_div_33">
       <static>true</static>
-      <pose>5.51 4.33 0.75 0 0 0</pose>
+      <pose>6.01 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2076,7 +2721,7 @@
     </model>
     <model name="vis_div_34">
       <static>true</static>
-      <pose>5.51 5.67 0.75 0 0 0</pose>
+      <pose>6.01 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2086,7 +2731,7 @@
     </model>
     <model name="vis_div_35">
       <static>true</static>
-      <pose>4.5 7.01 0.75 0 0 0</pose>
+      <pose>5.0 6.51 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2096,7 +2741,7 @@
     </model>
     <model name="vis_div_36">
       <static>true</static>
-      <pose>6.49 4.33 0.75 0 0 0</pose>
+      <pose>7.49 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2106,7 +2751,7 @@
     </model>
     <model name="vis_div_37">
       <static>true</static>
-      <pose>6.49 5.67 0.75 0 0 0</pose>
+      <pose>7.49 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2116,7 +2761,7 @@
     </model>
     <model name="vis_div_38">
       <static>true</static>
-      <pose>7.5 2.99 0.75 0 0 0</pose>
+      <pose>8.5 2.49 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2126,7 +2771,7 @@
     </model>
     <model name="vis_div_39">
       <static>true</static>
-      <pose>8.51 4.33 0.75 0 0 0</pose>
+      <pose>9.51 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2136,7 +2781,7 @@
     </model>
     <model name="vis_div_40">
       <static>true</static>
-      <pose>8.51 5.67 0.75 0 0 0</pose>
+      <pose>9.51 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2146,7 +2791,7 @@
     </model>
     <model name="vis_div_41">
       <static>true</static>
-      <pose>7.5 7.01 0.75 0 0 0</pose>
+      <pose>8.5 6.51 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2156,7 +2801,7 @@
     </model>
     <model name="vis_div_42">
       <static>true</static>
-      <pose>9.49 4.33 0.75 0 0 0</pose>
+      <pose>10.99 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2166,7 +2811,7 @@
     </model>
     <model name="vis_div_43">
       <static>true</static>
-      <pose>9.49 5.67 0.75 0 0 0</pose>
+      <pose>10.99 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2176,7 +2821,7 @@
     </model>
     <model name="vis_div_44">
       <static>true</static>
-      <pose>10.5 2.99 0.75 0 0 0</pose>
+      <pose>12.0 2.49 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2186,7 +2831,7 @@
     </model>
     <model name="vis_div_45">
       <static>true</static>
-      <pose>11.51 4.33 0.75 0 0 0</pose>
+      <pose>13.01 3.83 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2196,7 +2841,7 @@
     </model>
     <model name="vis_div_46">
       <static>true</static>
-      <pose>11.51 5.67 0.75 0 0 0</pose>
+      <pose>13.01 5.17 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>
@@ -2206,7 +2851,7 @@
     </model>
     <model name="vis_div_47">
       <static>true</static>
-      <pose>10.5 7.01 0.75 0 0 0</pose>
+      <pose>12.0 6.51 0.75 0 0 0</pose>
       <link name="link">
         <visual name="vis">
           <geometry><box><size>0.04 0.04 1.48</size></box></geometry>

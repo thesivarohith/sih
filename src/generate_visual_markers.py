@@ -22,8 +22,8 @@ def generate_visual_sdf() -> str:
     # ------------------------------------------------------------------
     # 1. Floor Graph Visual Nodes (Green Floor Markers)
     # ------------------------------------------------------------------
-    x_aisles = [-0.75, 0.0, 3.0, 6.0, 9.0, 11.0, 12.0, 12.5, 13.0, 14.0]
-    y_corridors = [2.5, 5.0, 7.5, 12.5, 13.5]
+    x_aisles = [-0.75, 0.0, 3.0, 3.5, 6.5, 7.0, 10.0, 10.5, 13.5, 14.5]
+    y_corridors = [2.0, 4.5, 7.0, 7.5, 10.0, 12.5, 13.5]
 
     nodes = {}
 
@@ -35,13 +35,13 @@ def generate_visual_sdf() -> str:
     # Racks & 10 Bays per Rack
     racks = [
         ("Rack_Yellow_1", 1.5, 10.0),
-        ("Rack_Yellow_2", 4.5, 10.0),
-        ("Rack_Yellow_3", 7.5, 10.0),
-        ("Rack_Yellow_4", 10.5, 10.0),
-        ("Rack_Blue_1", 1.5, 5.0),
-        ("Rack_Blue_2", 4.5, 5.0),
-        ("Rack_Blue_3", 7.5, 5.0),
-        ("Rack_Blue_4", 10.5, 5.0),
+        ("Rack_Yellow_2", 5.0, 10.0),
+        ("Rack_Yellow_3", 8.5, 10.0),
+        ("Rack_Yellow_4", 12.0, 10.0),
+        ("Rack_Blue_1", 1.5, 4.5),
+        ("Rack_Blue_2", 5.0, 4.5),
+        ("Rack_Blue_3", 8.5, 4.5),
+        ("Rack_Blue_4", 12.0, 4.5),
     ]
 
     for rack_name, cx, cy in racks:
