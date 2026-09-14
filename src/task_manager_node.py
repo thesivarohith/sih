@@ -669,12 +669,19 @@ class TaskManagerNode(Node):
         yaw_err = math.atan2(math.sin(yaw_err), math.cos(yaw_err))
 
         cmd = Twist()
-        if abs(yaw_err) > 0.3:
-            cmd.angular.z = 0.8 if yaw_err > 0 else -0.8
+        if abs(yaw_err) > 0.15:
+            # Turn in place: zero linear speed, minimum 0.2 rad/s angular speed to prevent stalling
+            ang_spd = max(0.2, min(1.0, abs(yaw_err) * 1.5))
+            cmd.angular.z = ang_spd if yaw_err > 0 else -ang_spd
             cmd.linear.x = 0.0
         else:
-            cmd.linear.x = min(self._linear_speed, dist * 0.5)
-            cmd.angular.z = 1.0 * yaw_err
+            # Facing waypoint (within 0.15 rad): drive forward along virtual rail
+            cmd.linear.x = min(self._linear_speed, max(0.15, dist * 0.5))
+            ang_val = 1.0 * yaw_err
+            if abs(ang_val) > 0.02:
+                cmd.angular.z = math.copysign(max(0.1, abs(ang_val)), ang_val)
+            else:
+                cmd.angular.z = 0.0
 
         self._pub_cmd_vel.publish(cmd)
         return False
