@@ -223,13 +223,6 @@ class AStarPlanner:
         if isinstance(goal, (list, tuple)) and len(goal) >= 2:
             goal_world_pos = (float(goal[0]), float(goal[1]))
 
-        if isinstance(start, (list, tuple)) and len(start) >= 2:
-            sx, sy = float(start[0]), float(start[1])
-            if sx >= 13.5:
-                egress_node = self.graph.find_nearest_node(13.5, sy)
-                if egress_node and egress_node != start_node:
-                    start_node = egress_node
-
         if start_node == goal_node:
             waypoints = [self.graph.nodes[start_node]]
             if goal_world_pos:
