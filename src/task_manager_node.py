@@ -208,7 +208,14 @@ class AStarPlanner:
     def __init__(self):
         self.graph = WarehouseGraph()
 
-    def plan(self, start: Any, goal: Any) -> List[Tuple[float, float]]:
+    def plan(
+        self,
+        start: Any,
+        goal: Any,
+        peer_trajectories: Optional[Dict[str, Dict[str, Any]]] = None,
+        self_id: str = "",
+        self_priority: float = 0.0
+    ) -> Tuple[List[Tuple[float, float]], List[str]]:
         start_node = self.graph.resolve_node(start)
         goal_node = self.graph.resolve_node(goal)
 
@@ -218,8 +225,8 @@ class AStarPlanner:
 
         if isinstance(start, (list, tuple)) and len(start) >= 2:
             sx, sy = float(start[0]), float(start[1])
-            if sx >= 12.5:
-                egress_node = self.graph.find_nearest_node(12.0, sy)
+            if sx >= 13.5:
+                egress_node = self.graph.find_nearest_node(13.5, sy)
                 if egress_node and egress_node != start_node:
                     start_node = egress_node
 
@@ -227,7 +234,23 @@ class AStarPlanner:
             waypoints = [self.graph.nodes[start_node]]
             if goal_world_pos:
                 waypoints.append(goal_world_pos)
-            return waypoints
+            return waypoints, [start_node]
+
+        # Extract higher-priority peer head-on edges
+        penalized_edges = set()
+        if peer_trajectories:
+            for pid, pdata in peer_trajectories.items():
+                if pid == self_id:
+                    continue
+                p_prio = float(pdata.get("priority", 0.0))
+                # Higher priority wins; tiebreaker by string robot ID
+                peer_wins = (p_prio > self_priority) or (abs(p_prio - self_priority) < 0.01 and pid < self_id)
+                if peer_wins:
+                    p_nodes = pdata.get("nodes", [])
+                    for i in range(len(p_nodes) - 1):
+                        u, v = p_nodes[i], p_nodes[i+1]
+                        penalized_edges.add((v, u))
+                        penalized_edges.add((u, v))
 
         # A* Search over graph nodes
         open_set = []
@@ -246,7 +269,11 @@ class AStarPlanner:
             if current == goal_node:
                 break
 
-            for neighbor, cost in self.graph.neighbors.get(current, []):
+            for neighbor, base_cost in self.graph.neighbors.get(current, []):
+                cost = base_cost
+                if (current, neighbor) in penalized_edges:
+                    cost += 999.0  # Massive cost penalty for head-on conflict
+
                 tentative_g = current_g + cost
                 if neighbor not in g_score or tentative_g < g_score[neighbor]:
                     g_score[neighbor] = tentative_g
@@ -268,7 +295,7 @@ class AStarPlanner:
         path_nodes.reverse()
 
         waypoints = [self.graph.nodes[nid] for nid in path_nodes]
-        return waypoints
+        return waypoints, path_nodes
 
 
 class TaskManagerNode(Node):
@@ -394,6 +421,12 @@ class TaskManagerNode(Node):
                 pool_qos
             )
 
+        # Global P2P Trajectory Sharing Channel for Dynamic A* Lane-Changing
+        self._peer_trajectories: Dict[str, Dict[str, Any]] = {}
+        self._current_path_nodes: List[str] = []
+        self._pub_trajectories = self.create_publisher(String, "/swarm/trajectories", pool_qos)
+        self._sub_trajectories = self.create_subscription(String, "/swarm/trajectories", self._trajectory_cb, pool_qos)
+
         # ---------------------------------------------------------------
         # Main Execution Loop Timer (10 Hz for navigation & state machine)
         # ---------------------------------------------------------------
@@ -482,6 +515,79 @@ class TaskManagerNode(Node):
                 f"[{self._robot_id}] Permanent obstruction detected during mission state '{self._state}'! Triggering task handoff..."
             )
             self._handle_mid_mission_obstruction()
+
+    # ===================================================================
+    # Trajectory P2P Sharing & Dynamic A* Replanning
+    # ===================================================================
+
+    def _get_priority_score(self) -> float:
+        """Compute AMR priority ranking based on robot index + wait time + battery level."""
+        rank_bonus = 100.0 if self._robot_id == "amr_1" else (50.0 if self._robot_id == "amr_2" else 10.0)
+        return rank_bonus + (10.0 * self._idle_wait_time_sec) + self._battery_level
+
+    def _plan_and_broadcast_trajectory(self, target: Any):
+        """Plan A* path incorporating P2P trajectory penalties and broadcast on swarm/trajectories."""
+        self._waypoints, self._current_path_nodes = self._planner.plan(
+            (self._pos_x, self._pos_y),
+            target,
+            peer_trajectories=self._peer_trajectories,
+            self_id=self._robot_id,
+            self_priority=self._get_priority_score()
+        )
+        self._broadcast_trajectory()
+
+    def _broadcast_trajectory(self):
+        """Broadcast current route and estimated times on /swarm/trajectories."""
+        if not self._current_path_nodes:
+            return
+        t_now = _time.time()
+        timestamps = [round(t_now + i * 3.0, 2) for i in range(len(self._current_path_nodes))]
+        payload = {
+            "amr_id": self._robot_id,
+            "priority": self._get_priority_score(),
+            "nodes": self._current_path_nodes,
+            "timestamps": timestamps
+        }
+        self._pub_trajectories.publish(String(data=json.dumps(payload)))
+
+    def _trajectory_cb(self, msg: String):
+        """Store peer trajectory broadcast and trigger dynamic replanning if head-on conflict detected."""
+        try:
+            data = json.loads(msg.data)
+        except Exception:
+            return
+
+        peer_id = data.get("amr_id")
+        if not peer_id or peer_id == self._robot_id:
+            return
+
+        self._peer_trajectories[peer_id] = data
+
+        if self._state in ("EN_ROUTE_PICKUP", "DELIVERING") and self._current_path_nodes and self._current_task:
+            peer_priority = float(data.get("priority", 0.0))
+            self_priority = self._get_priority_score()
+            peer_wins = (peer_priority > self_priority) or (abs(peer_priority - self_priority) < 0.01 and peer_id < self._robot_id)
+
+            if peer_wins:
+                peer_nodes = data.get("nodes", [])
+                has_head_on = False
+                for i in range(len(self._current_path_nodes) - 1):
+                    u, v = self._current_path_nodes[i], self._current_path_nodes[i+1]
+                    for j in range(len(peer_nodes) - 1):
+                        pu, pv = peer_nodes[j], peer_nodes[j+1]
+                        if (pu == v and pv == u) or (pu == u and pv == v):
+                            has_head_on = True
+                            break
+                    if has_head_on:
+                        break
+
+                if has_head_on:
+                    self.get_logger().info(
+                        f"[{self._robot_id}] Head-on conflict detected with higher-priority '{peer_id}'! Triggering dynamic A* lane-change replan..."
+                    )
+                    target = self._current_task.get("pickup") if self._state == "EN_ROUTE_PICKUP" else self._current_task.get("dropoff")
+                    if target:
+                        self._plan_and_broadcast_trajectory(target)
 
     # ===================================================================
     # Task Pool P2P Communications
@@ -662,7 +768,7 @@ class TaskManagerNode(Node):
             self.get_logger().info(
                 f"[{self._robot_id}] Planning Topological Graph A* path to pickup '{pickup}' for '{self._current_task.get('task_id')}'"
             )
-            self._waypoints = self._planner.plan((self._pos_x, self._pos_y), pickup)
+            self._plan_and_broadcast_trajectory(pickup)
             self._state = "EN_ROUTE_PICKUP"
 
         elif self._state == "EN_ROUTE_PICKUP":
@@ -671,7 +777,7 @@ class TaskManagerNode(Node):
                     f"[{self._robot_id}] Pickup reached for '{self._current_task.get('task_id')}'. Planning Topological Graph A* path to dropoff..."
                 )
                 dropoff = self._current_task.get("dropoff", [self._pos_x, self._pos_y])
-                self._waypoints = self._planner.plan((self._pos_x, self._pos_y), dropoff)
+                self._plan_and_broadcast_trajectory(dropoff)
                 self._state = "DELIVERING"
             else:
                 target_wp = self._waypoints[0]
@@ -830,6 +936,8 @@ class TaskManagerNode(Node):
 
         # Reset task state
         self._current_task = None
+        self._waypoints = []
+        self._current_path_nodes = []
         self._state = "IDLE"
 
     def _handle_mid_mission_obstruction(self):
