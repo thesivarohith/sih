@@ -47,6 +47,116 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 
 
+class Segment:
+    """
+    One strictly axis-aligned move: either dx==0 (pure Y move) or dy==0 (pure X move).
+    Enforces pure Manhattan grid locomotion.
+    """
+    __slots__ = ("x0", "y0", "x1", "y1", "axis", "heading")
+
+    def __init__(self, x0: float, y0: float, x1: float, y1: float):
+        dx, dy = x1 - x0, y1 - y0
+        if abs(dx) > 1e-4 and abs(dy) > 1e-4:
+            if abs(dx) > abs(dy):
+                y1 = y0
+                dy = 0.0
+            else:
+                x1 = x0
+                dx = 0.0
+
+        self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
+        if abs(dx) >= abs(dy):
+            self.axis = "x"
+            self.heading = 0.0 if dx >= 0 else math.pi
+        else:
+            self.axis = "y"
+            self.heading = math.pi / 2 if dy > 0 else -math.pi / 2
+
+    def remaining(self, cur_x: float, cur_y: float) -> float:
+        """Signed distance remaining along the drive axis."""
+        if self.axis == "x":
+            total = self.x1 - self.x0
+            done = cur_x - self.x0
+        else:
+            total = self.y1 - self.y0
+            done = cur_y - self.y0
+        remaining = total - done
+        return remaining if total >= 0 else -remaining
+
+    def crosstrack_error(self, cur_x: float, cur_y: float) -> float:
+        """Perpendicular offset from the rail line."""
+        return (cur_y - self.y0) if self.axis == "x" else (cur_x - self.x0)
+
+
+def collapse_to_segments(waypoints: List[Tuple[float, float]]) -> List[Segment]:
+    """
+    Collapse waypoints into corner-to-corner axis-aligned segments.
+    Eliminates diagonal drift by turning waypoints into discrete rail segments.
+    """
+    if len(waypoints) < 2:
+        return []
+
+    segments = []
+    seg_start = waypoints[0]
+    prev_dir = None
+
+    for i in range(1, len(waypoints)):
+        x0, y0 = waypoints[i - 1]
+        x1, y1 = waypoints[i]
+        dx, dy = x1 - x0, y1 - y0
+        if abs(dx) < 1e-4 and abs(dy) < 1e-4:
+            continue
+        cur_dir = "x" if abs(dx) > abs(dy) else "y"
+        cur_sign = math.copysign(1, dx if cur_dir == "x" else dy)
+
+        if prev_dir is None:
+            prev_dir = (cur_dir, cur_sign)
+        elif (cur_dir, cur_sign) != prev_dir:
+            corner = waypoints[i - 1]
+            if abs(corner[0] - seg_start[0]) > 1e-3 or abs(corner[1] - seg_start[1]) > 1e-3:
+                segments.append(Segment(seg_start[0], seg_start[1], corner[0], corner[1]))
+            seg_start = corner
+            prev_dir = (cur_dir, cur_sign)
+
+    last = waypoints[-1]
+    if (abs(last[0] - seg_start[0]) > 1e-3) or (abs(last[1] - seg_start[1]) > 1e-3):
+        segments.append(Segment(seg_start[0], seg_start[1], last[0], last[1]))
+
+    return segments
+
+
+def insert_egress_segment(spawn_x: float, spawn_y: float,
+                           segments: List[Segment],
+                           rail_xs: List[float], rail_ys: List[float]) -> List[Segment]:
+    """
+    Forces orthogonal egress from spawn pose to grid rails before path execution starts.
+    Architecturally prevents diagonal shortcutting from staging.
+    """
+    if not segments:
+        return segments
+
+    first = segments[0]
+    entry_x, entry_y = first.x0, first.y0
+
+    on_x_rail = any(abs(spawn_x - rx) < 0.05 for rx in rail_xs)
+    on_y_rail = any(abs(spawn_y - ry) < 0.05 for ry in rail_ys)
+
+    if on_x_rail and on_y_rail and abs(spawn_x - entry_x) < 0.05 and abs(spawn_y - entry_y) < 0.05:
+        return segments
+
+    if abs(spawn_x - entry_x) < 0.05 and abs(spawn_y - entry_y) > 0.05:
+        egress = Segment(spawn_x, spawn_y, entry_x, entry_y)
+        return [egress] + segments
+    elif abs(spawn_y - entry_y) < 0.05 and abs(spawn_x - entry_x) > 0.05:
+        egress = Segment(spawn_x, spawn_y, entry_x, entry_y)
+        return [egress] + segments
+    else:
+        mid = (entry_x, spawn_y)
+        seg_a = Segment(spawn_x, spawn_y, mid[0], mid[1])
+        seg_b = Segment(mid[0], mid[1], entry_x, entry_y)
+        return [seg_a, seg_b] + segments
+
+
 class WarehouseGraph:
     """
     Topological Graph (Virtual Rails) for 15x15m SIH Warehouse Map.
@@ -341,6 +451,9 @@ class TaskManagerNode(Node):
         self._current_task: Optional[Dict[str, Any]] = None
         self._planner = AStarPlanner()
         self._waypoints: List[Tuple[float, float]] = []
+        self._segments: List[Segment] = []
+        self._seg_idx: int = 0
+        self._sub_phase: str = "ROTATE"
 
         # Position tracking from Odom in Gazebo World Map Frame
         self._pos_x: float = self._spawn_x
@@ -550,7 +663,7 @@ class TaskManagerNode(Node):
         return dense_path
 
     def _plan_and_broadcast_trajectory(self, target: Any):
-        """Plan A* path incorporating P2P trajectory penalties and broadcast on swarm/trajectories."""
+        """Plan A* path incorporating P2P trajectory penalties, collapse to orthogonal segments, and broadcast."""
         raw_waypoints, self._current_path_nodes = self._planner.plan(
             (self._pos_x, self._pos_y),
             target,
@@ -559,6 +672,12 @@ class TaskManagerNode(Node):
             self_priority=self._get_priority_score()
         )
         self._waypoints = self._densify_path(raw_waypoints, step_size=0.1)
+        raw_segments = collapse_to_segments(self._waypoints)
+        all_x = sorted(list(set(x for x, y in self._planner.graph.nodes.values())))
+        all_y = sorted(list(set(y for x, y in self._planner.graph.nodes.values())))
+        self._segments = insert_egress_segment(self._pos_x, self._pos_y, raw_segments, all_x, all_y)
+        self._seg_idx = 0
+        self._sub_phase = "ROTATE"
         self._broadcast_trajectory()
 
     def _broadcast_trajectory(self):
@@ -797,7 +916,7 @@ class TaskManagerNode(Node):
             self._state = "EN_ROUTE_PICKUP"
 
         elif self._state == "EN_ROUTE_PICKUP":
-            if not self._waypoints:
+            if self._seg_idx >= len(self._segments):
                 self.get_logger().info(
                     f"[{self._robot_id}] Pickup reached for '{self._current_task.get('task_id')}'. Planning Topological Graph A* path to dropoff..."
                 )
@@ -805,46 +924,36 @@ class TaskManagerNode(Node):
                 self._plan_and_broadcast_trajectory(dropoff)
                 self._state = "DELIVERING"
             else:
-                target_wp = self._waypoints[0]
-                tol = 0.15
-                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
-                if arrived_wp:
-                    self._waypoints.pop(0)
+                completed = self._execute_segment(self._segments[self._seg_idx])
+                if completed:
+                    self._seg_idx += 1
 
         elif self._state == "DELIVERING":
-            if not self._waypoints:
+            if self._seg_idx >= len(self._segments):
                 self.get_logger().info(
                     f"[{self._robot_id}] Dropoff reached for '{self._current_task.get('task_id')}'. Task COMPLETED!"
                 )
                 self._complete_task()
             else:
-                target_wp = self._waypoints[0]
-                tol = 0.15
-                arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
-                if arrived_wp:
-                    self._waypoints.pop(0)
+                completed = self._execute_segment(self._segments[self._seg_idx])
+                if completed:
+                    self._seg_idx += 1
 
         elif self._state == "HANDOFF":
             # Stopping motors during handoff
             self._stop_motors()
 
-    def _navigate_towards(self, target_x: float, target_y: float, tolerance: Optional[float] = None) -> bool:
-        """Simple proportional velocity control towards target waypoint with LiDAR braking & Priority Aging."""
-        dx = target_x - self._pos_x
-        dy = target_y - self._pos_y
-        dist = math.sqrt(dx * dx + dy * dy)
-
-        effective_tolerance = tolerance if tolerance is not None else self._waypoint_tolerance
-        if dist <= effective_tolerance:
-            self._stop_motors()
-            return True
-
-        # Step 4: Real-time LiDAR Safety Brake (Peer-Aware Filter)
+    def _execute_segment(self, seg: Segment) -> bool:
+        """
+        Executes a single strictly axis-aligned segment using a hard 2-phase FSM (ROTATE -> DRIVE).
+        Returns True when the segment is complete.
+        """
+        # Step 4: Real-time LiDAR Safety Brake
         if self._lidar_obstacle_detected:
             peer_yielding_nearby = False
             for peer_id, peer_data in self._peer_telemetry.items():
                 ppos = peer_data.get("pos", [999.0, 999.0])
-                pdist = math.sqrt((ppos[0] - self._pos_x)**2 + (ppos[1] - self._pos_y)**2)
+                pdist = math.hypot(ppos[0] - self._pos_x, ppos[1] - self._pos_y)
                 if 0.35 < pdist < 1.5 and not peer_data.get("is_moving", False):
                     self_score = (10.0 * self._idle_wait_time_sec) + self._battery_level
                     peer_wait = peer_data.get("idle_wait_sec", 0.0)
@@ -864,9 +973,8 @@ class TaskManagerNode(Node):
 
         for peer_id, peer_data in self._peer_telemetry.items():
             ppos = peer_data.get("pos", [999.0, 999.0])
-            pdist = math.sqrt((ppos[0] - self._pos_x)**2 + (ppos[1] - self._pos_y)**2)
+            pdist = math.hypot(ppos[0] - self._pos_x, ppos[1] - self._pos_y)
             if pdist < 1.5:
-                # Calculate Priority Aging score
                 self_score = (10.0 * self._idle_wait_time_sec) + self._battery_level
                 peer_wait = peer_data.get("idle_wait_sec", 0.0)
                 peer_batt = peer_data.get("battery_pct", 100.0)
@@ -874,7 +982,6 @@ class TaskManagerNode(Node):
 
                 peer_is_active = peer_data.get("state") in ("EN_ROUTE_PICKUP", "DELIVERING")
                 if peer_is_active and (self_score < peer_score or (abs(self_score - peer_score) < 0.01 and self._robot_id > peer_id)):
-                    # Yield right of way with random jitter delay (10-200ms)
                     jitter = (hash(self._robot_id + str(_time.time())) % 190 + 10) / 1000.0
                     self._yield_until_time = _time.time() + 1.2 + jitter
                     self.get_logger().info(
@@ -883,34 +990,39 @@ class TaskManagerNode(Node):
                     self._stop_motors()
                     return False
 
-        # Calculate steering angle towards waypoint
-        target_yaw = math.atan2(dy, dx)
-        yaw_error = math.atan2(math.sin(target_yaw - self._current_yaw), math.cos(target_yaw - self._current_yaw))
-
         cmd = Twist()
-        # STRICT 90-DEGREE ZERO-RADIUS TURN-IN-PLACE STAGE
-        # If yaw error > 0.04 rad (~2.3 degrees), HALT linear speed completely and turn in place
-        if abs(yaw_error) > 0.04:
-            cmd.linear.x = 0.0
-            cmd.angular.z = math.copysign(max(0.35, min(0.8, abs(yaw_error) * 2.0)), yaw_error)
-        else:
-            # TRAIN-LIKE RAIL DRIVE STAGE
-            # AMR is aligned with the rail vector. Drive forward and apply cross-track lateral error correction.
-            speed = min(self._linear_speed, max(0.15, dist * 0.8))
-            cmd.linear.x = speed
 
-            # Cross-track lateral error calculation
-            if abs(dx) < 0.15:
-                lat_err = target_x - self._pos_x
-                cmd.angular.z = max(min(lat_err * 2.5 + yaw_error * 0.5, 0.4), -0.4)
-            elif abs(dy) < 0.15:
-                lat_err = target_y - self._pos_y
-                cmd.angular.z = max(min(-lat_err * 2.5 + yaw_error * 0.5, 0.4), -0.4)
+        if self._sub_phase == "ROTATE":
+            yaw_error = math.atan2(math.sin(seg.heading - self._current_yaw), math.cos(seg.heading - self._current_yaw))
+            if abs(yaw_error) > 0.03:  # ~1.7 degrees hard rotation gate
+                cmd.linear.x = 0.0
+                cmd.angular.z = max(-1.2, min(1.2, 2.5 * yaw_error))
+                self._pub_cmd_vel.publish(cmd)
+                return False
             else:
-                cmd.angular.z = yaw_error * 0.5
+                cmd.linear.x = 0.0
+                cmd.angular.z = 0.0
+                self._sub_phase = "DRIVE"
+                self.get_logger().info(f"[{self._robot_id}] Rotation complete (heading={math.degrees(seg.heading):.1f}deg) -> DRIVE along {seg.axis}-axis")
 
-        self._pub_cmd_vel.publish(cmd)
-        return False
+        if self._sub_phase == "DRIVE":
+            remaining = seg.remaining(self._pos_x, self._pos_y)
+            crosstrack = seg.crosstrack_error(self._pos_x, self._pos_y)
+
+            # 1D arrival check along the drive axis only
+            if abs(remaining) <= 0.05:  # 5cm tolerance along drive axis
+                cmd.linear.x = 0.0
+                cmd.angular.z = 0.0
+                self._sub_phase = "ROTATE"
+                self._pub_cmd_vel.publish(cmd)
+                return True  # Segment finished!
+            else:
+                speed = max(0.15, min(self._linear_speed, abs(remaining) * 0.8))
+                correction = max(-0.15, min(0.15, -1.5 * crosstrack))
+                cmd.linear.x = speed
+                cmd.angular.z = correction
+                self._cmd_vel_pub.publish(cmd)
+                return False
 
     def _stop_motors(self):
         """Publish zero velocity command to halt motors."""
