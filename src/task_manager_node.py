@@ -518,15 +518,47 @@ class TaskManagerNode(Node):
         rank_bonus = 100.0 if self._robot_id == "amr_1" else (50.0 if self._robot_id == "amr_2" else 10.0)
         return rank_bonus + (10.0 * self._idle_wait_time_sec) + self._battery_level
 
+    def _densify_path(self, sparse_path: List[Tuple[float, float]], step_size: float = 0.1) -> List[Tuple[float, float]]:
+        """
+        Path Densification: Interpolate intermediate waypoints every `step_size` meters (default 0.1m)
+        along each straight path segment in `sparse_path`.
+        This forces strict line-tracking without shortcutting/drifting between distant nodes.
+        """
+        if not sparse_path or len(sparse_path) < 2:
+            return list(sparse_path) if sparse_path else []
+
+        dense_path = [sparse_path[0]]
+        for i in range(len(sparse_path) - 1):
+            p1 = sparse_path[i]
+            p2 = sparse_path[i + 1]
+            dx = p2[0] - p1[0]
+            dy = p2[1] - p1[1]
+            dist = math.hypot(dx, dy)
+            if dist <= 1e-6:
+                continue
+
+            n_steps = int(math.floor(dist / step_size))
+            ux = dx / dist
+            uy = dy / dist
+
+            for k in range(1, n_steps + 1):
+                step_d = k * step_size
+                if step_d < dist - 1e-6:
+                    dense_path.append((p1[0] + ux * step_d, p1[1] + uy * step_d))
+
+            dense_path.append(p2)
+        return dense_path
+
     def _plan_and_broadcast_trajectory(self, target: Any):
         """Plan A* path incorporating P2P trajectory penalties and broadcast on swarm/trajectories."""
-        self._waypoints, self._current_path_nodes = self._planner.plan(
+        raw_waypoints, self._current_path_nodes = self._planner.plan(
             (self._pos_x, self._pos_y),
             target,
             peer_trajectories=self._peer_trajectories,
             self_id=self._robot_id,
             self_priority=self._get_priority_score()
         )
+        self._waypoints = self._densify_path(raw_waypoints, step_size=0.1)
         self._broadcast_trajectory()
 
     def _broadcast_trajectory(self):
@@ -774,7 +806,7 @@ class TaskManagerNode(Node):
                 self._state = "DELIVERING"
             else:
                 target_wp = self._waypoints[0]
-                tol = 0.08
+                tol = 0.15
                 arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
                 if arrived_wp:
                     self._waypoints.pop(0)
@@ -787,7 +819,7 @@ class TaskManagerNode(Node):
                 self._complete_task()
             else:
                 target_wp = self._waypoints[0]
-                tol = 0.08
+                tol = 0.15
                 arrived_wp = self._navigate_towards(target_wp[0], target_wp[1], tolerance=tol)
                 if arrived_wp:
                     self._waypoints.pop(0)
