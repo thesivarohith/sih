@@ -423,9 +423,9 @@ class TaskManagerNode(Node):
 
         # Default spawn poses in world frame (Top Staging Area to right of Red Box)
         spawn_defaults = {
-            "amr_1": (13.0, 7.5, 3.14159),
-            "amr_2": (13.0, 5.0, 3.14159),
-            "amr_3": (13.0, 2.5, 3.14159)
+            "amr_1": (13.5, 13.5, 3.14159),
+            "amr_2": (13.5, 7.5, 3.14159),
+            "amr_3": (13.5, 2.0, 3.14159)
         }
         def_sx, def_sy, def_syaw = spawn_defaults.get(default_id, (0.0, 5.0, 0.0))
 
