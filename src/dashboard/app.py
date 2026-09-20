@@ -28,10 +28,17 @@ from typing import Dict, Any, List
 from flask import Flask, render_template, Response, jsonify
 from flask_socketio import SocketIO
 
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
-from std_msgs.msg import String
+try:
+    import rclpy
+    from rclpy.node import Node
+    from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
+    from std_msgs.msg import String
+    HAS_ROS = True
+except ImportError:
+    HAS_ROS = False
+    Node = object
+    String = Any
+
 
 
 # Global In-Memory State Caches (Thread-safe reads for SSE stream)
@@ -162,6 +169,12 @@ class DashboardSubscriberNode(Node):
 
 def _run_ros_thread(socket_instance: SocketIO):
     """Background thread spinning ROS 2 executor with non-blocking GIL releases."""
+    if not HAS_ROS:
+        print("[Dashboard] ROS 2 (rclpy) not available. Dashboard running in standalone mode.")
+        while True:
+            time.sleep(1)
+        return
+
     rclpy.init()
     node = DashboardSubscriberNode(socket_instance)
     try:
@@ -179,6 +192,12 @@ def _run_ros_thread(socket_instance: SocketIO):
 def index():
     """Render brutalist engineering dashboard interface."""
     return render_template("index.html")
+
+
+@app.route("/injector")
+def injector():
+    """Render MissionInjector 3-column task queueing interface."""
+    return render_template("injector.html")
 
 
 @app.route("/api/state")

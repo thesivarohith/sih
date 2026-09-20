@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MissionInjector Task Queue</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * {
+      border-radius: 0px !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000000;
+      border: 1px solid #262626;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #404040;
+    }
+  </style>
+</head>
+<body class="bg-black text-neutral-300 font-mono antialiased p-4 select-none min-h-screen flex flex-col justify-center">
+
+  <div id="root" class="max-w-7xl mx-auto w-full bg-black border border-neutral-800 p-6 flex flex-col">
+    
+    <!-- Header -->
+    <header class="border-b border-neutral-800 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div>
+        <div class="flex items-center gap-4">
+          <h1 class="text-xl font-bold tracking-tight text-white uppercase">
+            MISSION INJECTOR CONTROL
+          </h1>
+          <a href="/" class="text-xs border border-neutral-700 text-neutral-300 px-3 py-1 hover:bg-neutral-900 uppercase font-bold">
+            &larr; BACK TO MONITOR
+          </a>
+        </div>
+        <p class="text-xs text-neutral-500 uppercase mt-1">
+          SWARM TASK QUEUEING SYSTEM / SIH26123
+        </p>
+      </div>
+      <div id="statusBadge" class="text-xs px-3 py-1 bg-neutral-950 border border-neutral-800 text-neutral-400 uppercase">
+        MODE: PICKUP SELECTION
+      </div>
+    </header>
+
+    <!-- Main 3-Column Layout: Left (From), Middle (To), Right (Task Script Log) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN: 'From' Grid -->
+      <div id="fromColumn" class="lg:col-span-4 bg-neutral-950 border border-neutral-500 p-4 flex flex-col h-[580px]">
+        <div class="flex justify-between items-center border-b border-neutral-800 pb-2 mb-3">
+          <span class="text-xs font-bold uppercase text-white">
+            FROM: PICKUP BAY
+          </span>
+          <span id="fromBadge" class="text-[10px] px-2 py-0.5 uppercase border border-neutral-600 text-white bg-neutral-900">
+            READY
+          </span>
+        </div>
+
+        <div id="fromGrid" class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- MIDDLE COLUMN: 'To' Grid -->
+      <div id="toColumn" class="lg:col-span-3 bg-neutral-950 border border-neutral-900 opacity-40 pointer-events-none p-4 flex flex-col h-[580px]">
+        <div class="flex justify-between items-center border-b border-neutral-800 pb-2 mb-3">
+          <span class="text-xs font-bold uppercase text-white">
+            TO: DROPOFF BAY
+          </span>
+          <span id="toBadge" class="text-[10px] px-2 py-0.5 uppercase border border-neutral-900 text-neutral-600">
+            LOCKED
+          </span>
+        </div>
+
+        <div id="toGrid" class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Task Script Log -->
+      <div class="lg:col-span-5 bg-neutral-950 border border-neutral-800 p-4 flex flex-col justify-between h-[580px]">
+        <div class="flex flex-col h-full justify-between">
+          <div>
+            <div class="flex justify-between items-center border-b border-neutral-800 pb-2 mb-3">
+              <span id="terminalHeader" class="text-xs font-bold uppercase text-white">
+                TASK SCRIPT LOG (0)
+              </span>
+              <button id="clearBtn" class="hidden text-xs border border-neutral-800 text-neutral-400 hover:text-white px-2 py-0.5 uppercase">
+                CLEAR
+              </button>
+            </div>
+
+            <!-- Code Output Box -->
+            <div id="terminalWindow" class="bg-black border border-neutral-900 p-3 h-[420px] overflow-y-auto font-mono text-xs text-neutral-300 space-y-3 leading-relaxed">
+              <div class="text-neutral-600">
+                Select a pickup bay on the left, then a dropoff bay in the middle to append Zenoh task commands.
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Pass Script Button -->
+          <div class="pt-3 border-t border-neutral-800 mt-auto">
+            <button id="passScriptBtn" disabled class="w-full py-3 font-bold uppercase text-xs border border-neutral-900 text-neutral-700 bg-black cursor-not-allowed">
+              PASS SCRIPT TO SWARM
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const BAYS = [
+      'r1a_bay_0', 'r1a_bay_1', 'r1a_bay_2', 'r1a_bay_3', 'r1a_bay_4',
+      'r1b_bay_0', 'r1b_bay_1', 'r1b_bay_2', 'r1b_bay_3', 'r1b_bay_4',
+      'r2a_bay_0', 'r2a_bay_1', 'r2a_bay_2', 'r2a_bay_3', 'r2a_bay_4',
+      'r2b_bay_0', 'r2b_bay_1', 'r2b_bay_2', 'r2b_bay_3', 'r2b_bay_4',
+      'r3a_bay_0', 'r3a_bay_1', 'r3a_bay_2', 'r3a_bay_3', 'r3a_bay_4',
+      'r3b_bay_0', 'r3b_bay_1', 'r3b_bay_2', 'r3b_bay_3', 'r3b_bay_4'
+    ];
+
+    let selectedFrom = null;
+    let step = 'SELECT_FROM';
+    let queuedTasks = [];
+
+    const fromColumn = document.getElementById('fromColumn');
+    const toColumn = document.getElementById('toColumn');
+    const fromBadge = document.getElementById('fromBadge');
+    const toBadge = document.getElementById('toBadge');
+    const statusBadge = document.getElementById('statusBadge');
+    const fromGrid = document.getElementById('fromGrid');
+    const toGrid = document.getElementById('toGrid');
+    const terminalWindow = document.getElementById('terminalWindow');
+    const terminalHeader = document.getElementById('terminalHeader');
+    const clearBtn = document.getElementById('clearBtn');
+    const passScriptBtn = document.getElementById('passScriptBtn');
+
+    function handleSelectFrom(bay) {
+      if (step !== 'SELECT_FROM') return;
+      selectedFrom = bay;
+      step = 'SELECT_TO';
+      render();
+    }
+
+    function handleSelectTo(toBay) {
+      if (step !== 'SELECT_TO' || !selectedFrom) return;
+
+      const taskId = `task_${Date.now().toString().slice(-6)}`;
+      const command = `zenoh put /swarm/tasks/pool '{"msg_type": "AVAILABLE", "task_id": "${taskId}", "pickup": "${selectedFrom}", "drop": "${toBay}"}'`;
+
+      queuedTasks.push({
+        id: taskId,
+        pickup: selectedFrom,
+        drop: toBay,
+        command: command,
+        timestamp: new Date().toLocaleTimeString()
+      });
+
+      selectedFrom = null;
+      step = 'SELECT_FROM';
+      render();
+    }
+
+    function handleClear() {
+      queuedTasks = [];
+      render();
+    }
+
+    function handlePassScript() {
+      if (queuedTasks.length === 0) return;
+      const fullScript = queuedTasks.map(t => t.command).join('\n');
+      navigator.clipboard.writeText(fullScript).catch(() => {});
+
+      passScriptBtn.innerText = 'SCRIPT COPIED TO CLIPBOARD';
+      setTimeout(() => {
+        passScriptBtn.innerText = 'PASS SCRIPT TO SWARM';
+      }, 2000);
+    }
+
+    function render() {
+      if (step === 'SELECT_FROM') {
+        fromColumn.className = "lg:col-span-4 bg-neutral-950 border border-neutral-500 p-4 flex flex-col h-[580px]";
+        fromBadge.className = "text-[10px] px-2 py-0.5 uppercase border border-neutral-600 text-white bg-neutral-900";
+        fromBadge.innerText = "READY";
+
+        toColumn.className = "lg:col-span-3 bg-neutral-950 border border-neutral-900 opacity-40 pointer-events-none p-4 flex flex-col h-[580px]";
+        toBadge.className = "text-[10px] px-2 py-0.5 uppercase border border-neutral-900 text-neutral-600";
+        toBadge.innerText = "LOCKED";
+
+        statusBadge.innerText = "MODE: PICKUP SELECTION";
+      } else {
+        fromColumn.className = "lg:col-span-4 bg-neutral-950 border border-neutral-900 opacity-40 pointer-events-none p-4 flex flex-col h-[580px]";
+        fromBadge.className = "text-[10px] px-2 py-0.5 uppercase border border-neutral-900 text-neutral-600";
+        fromBadge.innerText = "LOCKED";
+
+        toColumn.className = "lg:col-span-3 bg-neutral-950 border border-neutral-500 p-4 flex flex-col h-[580px]";
+        toBadge.className = "text-[10px] px-2 py-0.5 uppercase border border-neutral-600 text-white bg-neutral-900";
+        toBadge.innerText = "READY";
+
+        statusBadge.innerText = "MODE: DROPOFF SELECTION";
+      }
+
+      fromGrid.innerHTML = BAYS.map(bay => {
+        const isSelected = selectedFrom === bay;
+        return `
+          <button onclick="handleSelectFrom('${bay}')"
+            class="border p-2.5 text-left text-xs font-mono flex flex-col justify-between ${
+              isSelected
+                ? 'bg-neutral-200 text-black border-white font-bold'
+                : 'bg-black border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white'
+            }">
+            <span class="text-[10px] ${isSelected ? 'text-black' : 'text-neutral-600'}">BAY</span>
+            <span>${bay}</span>
+          </button>
+        `;
+      }).join('');
+
+      toGrid.innerHTML = BAYS.map(bay => {
+        return `
+          <button onclick="handleSelectTo('${bay}')"
+            class="border border-neutral-800 bg-black hover:border-neutral-600 text-neutral-400 hover:text-white p-2.5 text-left text-xs font-mono flex flex-col justify-between">
+            <span class="text-[10px] text-neutral-600">BAY</span>
+            <span>${bay}</span>
+          </button>
+        `;
+      }).join('');
+
+      terminalHeader.innerText = `TASK SCRIPT LOG (${queuedTasks.length})`;
+      if (queuedTasks.length > 0) {
+        clearBtn.classList.remove('hidden');
+        terminalWindow.innerHTML = queuedTasks.map((t, idx) => `
+          <div class="border-b border-neutral-900 pb-2">
+            <div class="text-neutral-600 text-[10px]">
+              Task ${idx + 1} [${t.timestamp}] ${t.pickup} -&gt; ${t.drop}
+            </div>
+            <div class="text-neutral-200 break-all">
+              ${t.command}
+            </div>
+          </div>
+        `).join('');
+
+        passScriptBtn.disabled = false;
+        passScriptBtn.className = "w-full py-3 font-bold uppercase text-xs border border-white bg-neutral-200 text-black hover:bg-white cursor-pointer";
+      } else {
+        clearBtn.classList.add('hidden');
+        terminalWindow.innerHTML = `
+          <div class="text-neutral-600">
+            Select a pickup bay on the left, then a dropoff bay in the middle to append Zenoh task commands.
+          </div>
+        `;
+        passScriptBtn.disabled = true;
+        passScriptBtn.className = "w-full py-3 font-bold uppercase text-xs border border-neutral-900 text-neutral-700 bg-black cursor-not-allowed";
+      }
+
+      terminalWindow.scrollTop = terminalWindow.scrollHeight;
+    }
+
+    clearBtn.addEventListener('click', handleClear);
+    passScriptBtn.addEventListener('click', handlePassScript);
+
+    render();
+  </script>
+</body>
+</html>
