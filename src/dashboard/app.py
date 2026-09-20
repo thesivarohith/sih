@@ -43,9 +43,9 @@ except ImportError:
 
 # Global In-Memory State Caches (Thread-safe reads for SSE stream)
 TELEMETRY_DATA: Dict[str, Dict[str, Any]] = {
-    "amr_1": {"robot_id": "amr_1", "x": 7.5, "y": 7.5, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
-    "amr_2": {"robot_id": "amr_2", "x": 5.0, "y": 7.5, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
-    "amr_3": {"robot_id": "amr_3", "x": 10.0, "y": 7.5, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
+    "amr_1": {"robot_id": "amr_1", "x": 9.375, "y": 13.75, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
+    "amr_2": {"robot_id": "amr_2", "x": 11.25, "y": 13.75, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
+    "amr_3": {"robot_id": "amr_3", "x": 13.125, "y": 13.75, "battery_pct": 100.0, "wait_duration_sec": 0.0, "is_halted": False},
 }
 
 TASK_STATUS_DATA: Dict[str, str] = {
