@@ -174,15 +174,41 @@
       render();
     }
 
+    const BAY_COORDINATES = {
+      'r1a_bay_0': { x: 1, y: 4 }, 'r1a_bay_1': { x: 1, y: 6 }, 'r1a_bay_2': { x: 5, y: 4 }, 'r1a_bay_3': { x: 5, y: 6 }, 'r1a_bay_4': { x: 1, y: 4 },
+      'r1b_bay_0': { x: 5, y: 4 }, 'r1b_bay_1': { x: 5, y: 6 }, 'r1b_bay_2': { x: 9, y: 4 }, 'r1b_bay_3': { x: 9, y: 6 }, 'r1b_bay_4': { x: 9, y: 4 },
+      'r2a_bay_0': { x: 1, y: 6 }, 'r2a_bay_1': { x: 1, y: 8 }, 'r2a_bay_2': { x: 5, y: 6 }, 'r2a_bay_3': { x: 5, y: 8 }, 'r2a_bay_4': { x: 1, y: 8 },
+      'r2b_bay_0': { x: 5, y: 6 }, 'r2b_bay_1': { x: 5, y: 8 }, 'r2b_bay_2': { x: 9, y: 6 }, 'r2b_bay_3': { x: 9, y: 8 }, 'r2b_bay_4': { x: 9, y: 8 },
+      'r3a_bay_0': { x: 1, y: 8 }, 'r3a_bay_1': { x: 1, y: 10 }, 'r3a_bay_2': { x: 5, y: 8 }, 'r3a_bay_3': { x: 5, y: 10 }, 'r3a_bay_4': { x: 1, y: 10 },
+      'r3b_bay_0': { x: 5, y: 10 }, 'r3b_bay_1': { x: 5, y: 12 }, 'r3b_bay_2': { x: 9, y: 10 }, 'r3b_bay_3': { x: 9, y: 12 }, 'r3b_bay_4': { x: 9, y: 12 }
+    };
+
     function handlePassScript() {
       if (queuedTasks.length === 0) return;
       const fullScript = queuedTasks.map(t => t.command).join('\n');
       navigator.clipboard.writeText(fullScript).catch(() => {});
 
-      passScriptBtn.innerText = 'SCRIPT COPIED TO CLIPBOARD';
+      queuedTasks.forEach(t => {
+        const pickupCoord = BAY_COORDINATES[t.pickup] || { x: 1, y: 11 };
+        const dropCoord = BAY_COORDINATES[t.drop] || { x: 5, y: 5 };
+
+        fetch('/api/inject_task', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ task_id: t.id, pickup: t.pickup, drop: t.drop, pickupCoord, dropCoord })
+        }).catch(err => console.error("Task injection error:", err));
+
+        if (window.opener && window.opener.simulateCNPAuction) {
+          window.opener.simulateCNPAuction(pickupCoord, dropCoord);
+        } else if (window.simulateCNPAuction) {
+          window.simulateCNPAuction(pickupCoord, dropCoord);
+        }
+      });
+
+      passScriptBtn.innerText = 'TASKS DISPATCHED TO SWARM!';
       setTimeout(() => {
-        passScriptBtn.innerText = 'PASS SCRIPT TO SWARM';
-      }, 2000);
+        window.location.href = '/';
+      }, 500);
     }
 
     function render() {

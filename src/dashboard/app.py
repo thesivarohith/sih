@@ -200,6 +200,42 @@ def injector():
     return render_template("injector.html")
 
 
+@app.route("/api/inject_task", methods=["POST"])
+def inject_task():
+    """Receive task injection payload from Mission Injector UI."""
+    from flask import request
+    data = request.get_json(silent=True) or {}
+    pickup = data.get("pickup")
+    drop = data.get("drop")
+    task_id = data.get("task_id", f"task_{int(time.time())}")
+
+    auction_event = {
+        "msg_type": "AVAILABLE",
+        "auction_id": task_id,
+        "initiator_id": "MISSION_INJECTOR",
+        "pickup": pickup,
+        "drop": drop,
+        "timestamp": time.time()
+    }
+
+    with state_lock:
+        AUCTION_LOGS.append(auction_event)
+        if len(AUCTION_LOGS) > 50:
+            AUCTION_LOGS.pop(0)
+
+    socketio.emit("auction_update", auction_event)
+    return jsonify({"status": "SUCCESS", "task_id": task_id, "event": auction_event})
+
+
+@app.route("/api/clear_tasks", methods=["POST", "GET"])
+def clear_tasks():
+    """Clear all auction task logs and reset metrics."""
+    with state_lock:
+        AUCTION_LOGS.clear()
+        METRICS_DATA.clear()
+    return jsonify({"status": "CLEARED"})
+
+
 @app.route("/api/state")
 def get_state():
     """REST endpoint returning full snapshot of current swarm state."""

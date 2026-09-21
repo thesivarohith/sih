@@ -179,9 +179,39 @@
         .status-halt { color: #ff5555; }
         .status-proceed { color: #55ff55; }
         .status-yield { color: #ffaa00; }
+
+        /* ── Toast Notifications ── */
+        .toast-popup {
+            background-color: #0d1117;
+            color: #55ff55;
+            border: 1px solid #55ff55;
+            padding: 10px 16px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0, 255, 85, 0.25) !important;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto;
+            max-width: 380px;
+        }
+        .toast-popup.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast-charging {
+            color: #facc15;
+            border-color: #facc15;
+            box-shadow: 0 4px 16px rgba(250, 204, 21, 0.25) !important;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Toast Container for Task Completion & Battery Notifications -->
+    <div id="toastContainer" style="position: fixed; top: 16px; right: 16px; z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;"></div>
 
     <header>
         <div>
@@ -208,6 +238,7 @@
                         aspect-ratio: 9 / 12;
                         max-height: 100%;
                         display: grid;
+                        position: relative;
                         grid-template-columns: repeat(9, minmax(0, 1fr));
                         grid-template-rows: repeat(12, minmax(0, 1fr));
                         gap: 4px;
@@ -223,17 +254,17 @@
                         <div style="grid-column: 2 / span 3; grid-row: 2 / span 2; background-color: #ef4444; border: 1px solid #b91c1c;"></div>
 
                         <!-- AMR 1 (Top Staging) -->
-                        <div id="amr-cell-1" style="grid-column: 6; grid-row: 2; display: flex; align-items: center; justify-content: center;">
+                        <div id="amr-cell-1" style="position: absolute; left: 55.55%; top: 8.33%; width: 11.11%; height: 8.33%; display: flex; align-items: center; justify-content: center; z-index: 10; transition: left 300ms linear, top 300ms linear;">
                             <div style="width: 14px; height: 14px; background-color: #3b82f6; border: 1px solid #ffffff;"></div>
                         </div>
 
                         <!-- AMR 2 (Top Staging) -->
-                        <div id="amr-cell-2" style="grid-column: 7; grid-row: 2; display: flex; align-items: center; justify-content: center;">
+                        <div id="amr-cell-2" style="position: absolute; left: 66.66%; top: 8.33%; width: 11.11%; height: 8.33%; display: flex; align-items: center; justify-content: center; z-index: 10; transition: left 300ms linear, top 300ms linear;">
                             <div style="width: 14px; height: 14px; background-color: #3b82f6; border: 1px solid #ffffff;"></div>
                         </div>
 
                         <!-- AMR 3 (Top Staging) -->
-                        <div id="amr-cell-3" style="grid-column: 8; grid-row: 2; display: flex; align-items: center; justify-content: center;">
+                        <div id="amr-cell-3" style="position: absolute; left: 77.77%; top: 8.33%; width: 11.11%; height: 8.33%; display: flex; align-items: center; justify-content: center; z-index: 10; transition: left 300ms linear, top 300ms linear;">
                             <div style="width: 14px; height: 14px; background-color: #3b82f6; border: 1px solid #ffffff;"></div>
                         </div>
 
@@ -310,7 +341,10 @@
 
             <!-- Row 2: CNP Auction (fills remaining space) -->
             <div class="panel">
-                <div class="panel-title">Contract Net Protocol (CNP) Auction Event Stream</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333333; padding-bottom: 4px; margin-bottom: 6px;">
+                    <div class="panel-title" style="border: none; padding: 0; margin: 0;">Contract Net Protocol (CNP) Auction Event Stream</div>
+                    <button onclick="clearAuctionStream()" style="background: transparent; color: #ff5555; border: 1px solid #ff5555; padding: 2px 8px; font-family: monospace; font-size: 11px; cursor: pointer;">[ CLEAR STREAM ]</button>
+                </div>
                 <div class="log-container" id="auctionLogContainer">
                     <div class="log-entry">SYSTEM INIT: Listening on P2P topic swarm/tasks/auction...</div>
                 </div>
@@ -345,80 +379,534 @@
 
     <script>
         // ════════════════════════════════════════════
-        // Grid Map & Expand state management
+        // 1. Costmap (9-column x 12-row Grid Matrix)
+        // 0 = drivable, 1 = obstacle
         // ════════════════════════════════════════════
-        let isExpanded = false;
+        const GRID_COLS = 9;
+        const GRID_ROWS = 12;
+        const COSTMAP = Array.from({ length: GRID_ROWS + 1 }, () => Array(GRID_COLS + 1).fill(0));
 
-        function toggleMapExpand() {
-            isExpanded = !isExpanded;
-            const canvasPanel = document.getElementById('canvasPanel');
-            const expandBtn = document.getElementById('expandMapBtn');
+        // Red block: cols 2-4, rows 2-3
+        for (let r = 2; r <= 3; r++) for (let c = 2; c <= 4; c++) COSTMAP[r][c] = 1;
+        // Yellow racks: cols 2-4, rows 5,7,9,11
+        [5,7,9,11].forEach(r => { for (let c = 2; c <= 4; c++) COSTMAP[r][c] = 1; });
+        // Blue racks: cols 6-8, rows 5,7,9,11
+        [5,7,9,11].forEach(r => { for (let c = 6; c <= 8; c++) COSTMAP[r][c] = 1; });
 
-            if (isExpanded) {
-                canvasPanel.style.position = 'fixed';
-                canvasPanel.style.inset = '0';
-                canvasPanel.style.zIndex = '9999';
-                canvasPanel.style.backgroundColor = '#000000';
-                canvasPanel.style.padding = '24px';
-                expandBtn.innerText = '[-] COLLAPSE';
-            } else {
-                canvasPanel.style.position = 'relative';
-                canvasPanel.style.inset = 'auto';
-                canvasPanel.style.zIndex = 'auto';
-                canvasPanel.style.backgroundColor = 'transparent';
-                canvasPanel.style.padding = '8px';
-                expandBtn.innerText = '[+] EXPAND';
+        // ════════════════════════════════════════════
+        // 2. A* Pathfinding (Orthogonal only)
+        // ════════════════════════════════════════════
+        function findAStarPath(start, target) {
+            if (!start || !target) return [];
+            const h = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+            const key = (p) => `${p.x},${p.y}`;
+            const openSet = [];
+            const closedSet = new Set();
+            const cameFrom = new Map();
+            const gScore = new Map();
+            const fScore = new Map();
+            const sk = key(start);
+            gScore.set(sk, 0);
+            fScore.set(sk, h(start, target));
+            openSet.push({ pos: start, f: fScore.get(sk) });
+            const dirs = [{x:0,y:-1},{x:0,y:1},{x:-1,y:0},{x:1,y:0}];
+
+            while (openSet.length > 0) {
+                openSet.sort((a, b) => a.f - b.f);
+                const cur = openSet.shift();
+                const c = cur.pos;
+                const ck = key(c);
+                if (c.x === target.x && c.y === target.y) {
+                    const path = [c]; let k = ck;
+                    while (cameFrom.has(k)) { const p = cameFrom.get(k); path.unshift(p); k = key(p); }
+                    return path;
+                }
+                closedSet.add(ck);
+                for (const d of dirs) {
+                    const nx = c.x + d.x, ny = c.y + d.y;
+                    if (nx < 1 || nx > GRID_COLS || ny < 1 || ny > GRID_ROWS) continue;
+                    if (COSTMAP[ny][nx] === 1) continue;
+                    const nb = {x: nx, y: ny};
+                    const nk = key(nb);
+                    if (closedSet.has(nk)) continue;
+                    const tg = gScore.get(ck) + 1;
+                    if (!gScore.has(nk) || tg < gScore.get(nk)) {
+                        cameFrom.set(nk, c);
+                        gScore.set(nk, tg);
+                        const fv = tg + h(nb, target);
+                        fScore.set(nk, fv);
+                        if (!openSet.some(i => key(i.pos) === nk)) openSet.push({pos: nb, f: fv});
+                    }
+                }
+            }
+            return [];
+        }
+
+        // ════════════════════════════════════════════
+        // 3. AMR State & Positioning
+        // ════════════════════════════════════════════
+        let amr1Pos = { col: 6, row: 2 };
+        let amr2Pos = { col: 7, row: 2 };
+        let amr3Pos = { col: 8, row: 2 };
+
+        const STAGING_POSITIONS = {
+            'amr1': { col: 6, row: 2 },
+            'amr2': { col: 7, row: 2 },
+            'amr3': { col: 8, row: 2 }
+        };
+
+        let robotStatuses = { 'amr_1': 'IDLE', 'amr_2': 'IDLE', 'amr_3': 'IDLE' };
+        let robotBatteries = { 'amr_1': 100, 'amr_2': 100, 'amr_3': 100 };
+        window.robotBatteries = robotBatteries;
+        let activeAnimatingRobots = new Set();
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        function showToastNotification(message, isCharging = false) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast-popup' + (isCharging ? ' toast-charging' : '');
+            toast.innerHTML = `<span style="font-size: 14px;">${isCharging ? '⚡' : '🔔'}</span> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 350);
+            }, 3500);
+        }
+
+        function getAmrPos(robotId) {
+            if (robotId === 'amr1' || robotId === 'amr_1') return amr1Pos;
+            if (robotId === 'amr2' || robotId === 'amr_2') return amr2Pos;
+            if (robotId === 'amr3' || robotId === 'amr_3') return amr3Pos;
+            return { col: 6, row: 2 };
+        }
+
+        function setRobotStatus(robotId, status) {
+            const k = robotId.includes('_') ? robotId : robotId.replace('amr', 'amr_');
+            robotStatuses[k] = status;
+            const el = document.getElementById(k + '-status');
+            if (el) {
+                el.innerText = status;
+                el.className = status.includes('BUSY') ? 'status-halt' : 'status-idle';
             }
         }
 
-        // Map real-world X/Y coordinates (0-15m) to 9x12 Grid Column & Row
+        function setAmrPos(robotId, pos) {
+            const col = pos.x !== undefined ? pos.x : pos.col;
+            const row = pos.y !== undefined ? pos.y : pos.row;
+            let stdKey = 'amr_1', cellId = 'amr-cell-1';
+            if (robotId === 'amr1' || robotId === 'amr_1') { amr1Pos = {col,row}; stdKey='amr_1'; cellId='amr-cell-1'; }
+            else if (robotId === 'amr2' || robotId === 'amr_2') { amr2Pos = {col,row}; stdKey='amr_2'; cellId='amr-cell-2'; }
+            else if (robotId === 'amr3' || robotId === 'amr_3') { amr3Pos = {col,row}; stdKey='amr_3'; cellId='amr-cell-3'; }
+
+            const cell = document.getElementById(cellId);
+            if (cell) {
+                cell.style.left = `${((col - 1) * (100 / GRID_COLS)).toFixed(2)}%`;
+                cell.style.top = `${((row - 1) * (100 / GRID_ROWS)).toFixed(2)}%`;
+            }
+            const mx = ((col - 1) / 8 * 15.0).toFixed(2);
+            const my = ((12 - row) / 11 * 15.0).toFixed(2);
+            const xEl = document.getElementById(stdKey + '-x');
+            const yEl = document.getElementById(stdKey + '-y');
+            if (xEl) xEl.innerText = `${mx} (col ${col})`;
+            if (yEl) yEl.innerText = `${my} (row ${row})`;
+        }
+
+        async function animateAMR(pathArray, robotId) {
+            if (!pathArray || pathArray.length === 0) return;
+            activeAnimatingRobots.add(robotId);
+            for (let i = 0; i < pathArray.length; i++) {
+                setAmrPos(robotId, { col: pathArray[i].x, row: pathArray[i].y });
+                await sleep(300);
+            }
+            activeAnimatingRobots.delete(robotId);
+        }
+
+        // ════════════════════════════════════════════
+        // 4. Auction Log
+        // ════════════════════════════════════════════
+        let auctionLogs = [];
+
+        function addAuctionLog(message, color) {
+            auctionLogs.push(message);
+            const container = document.getElementById('auctionLogContainer');
+            if (container) {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                const ts = new Date().toISOString().split('T')[1].slice(0, 8);
+                entry.innerHTML = `<span style="color:#555">[${ts}]</span> <span style="color:${color || '#888'}">${message}</span>`;
+                container.appendChild(entry);
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        function clearAuctionStream() {
+            auctionLogs = [];
+            taskPool = [];
+            const container = document.getElementById('auctionLogContainer');
+            if (container) container.innerHTML = '<div class="log-entry">SYSTEM LOGS CLEARED.</div>';
+            fetch('/api/clear_tasks', { method: 'POST' }).catch(() => {});
+        }
+
+        // ════════════════════════════════════════════
+        // 5. Bay Coordinates & Helpers
+        // ════════════════════════════════════════════
+        const BAY_COORDINATES = {
+            'r1a_bay_0': {x:1,y:4}, 'r1a_bay_1': {x:1,y:6}, 'r1a_bay_2': {x:5,y:4}, 'r1a_bay_3': {x:5,y:6}, 'r1a_bay_4': {x:1,y:4},
+            'r1b_bay_0': {x:5,y:4}, 'r1b_bay_1': {x:5,y:6}, 'r1b_bay_2': {x:9,y:4}, 'r1b_bay_3': {x:9,y:6}, 'r1b_bay_4': {x:9,y:4},
+            'r2a_bay_0': {x:1,y:6}, 'r2a_bay_1': {x:1,y:8}, 'r2a_bay_2': {x:5,y:6}, 'r2a_bay_3': {x:5,y:8}, 'r2a_bay_4': {x:1,y:8},
+            'r2b_bay_0': {x:5,y:6}, 'r2b_bay_1': {x:5,y:8}, 'r2b_bay_2': {x:9,y:6}, 'r2b_bay_3': {x:9,y:8}, 'r2b_bay_4': {x:9,y:8},
+            'r3a_bay_0': {x:1,y:8}, 'r3a_bay_1': {x:1,y:10}, 'r3a_bay_2': {x:5,y:8}, 'r3a_bay_3': {x:5,y:10}, 'r3a_bay_4': {x:1,y:10},
+            'r3b_bay_0': {x:5,y:10}, 'r3b_bay_1': {x:5,y:12}, 'r3b_bay_2': {x:9,y:10}, 'r3b_bay_3': {x:9,y:12}, 'r3b_bay_4': {x:9,y:12}
+        };
+
+        function resolve(node) {
+            if (!node) return {x:5,y:12};
+            if (typeof node === 'string') return BAY_COORDINATES[node] || {x:5,y:12};
+            if (node.x !== undefined) return node;
+            return {x:5,y:12};
+        }
+
+        function manhattan(a, b) {
+            return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        }
+
+        // ════════════════════════════════════════════
+        // 6. Default 10 Tasks
+        // ════════════════════════════════════════════
+        const DEFAULT_TASKS = [];
+
+        // ════════════════════════════════════════════
+        // 7. Task Pool & CNP Batch Auction Engine
+        // ════════════════════════════════════════════
+        let taskPool = [];           // tasks waiting for an AMR
+        let completedCount = 0;      // track finished tasks
+        let missionStarted = false;  // prevent double-start
+
+        // Auction: find the best (AMR, task) pair from the pool
+        // Only IDLE AMRs can bid. Pick the pair with shortest manhattan distance.
+        function auctionBestMatch() {
+            const idleRobots = ['amr1','amr2','amr3'].filter(id => {
+                const k = id.replace('amr', 'amr_');
+                return robotStatuses[k] === 'IDLE';
+            });
+
+            if (idleRobots.length === 0 || taskPool.length === 0) return null;
+
+            let bestDist = Infinity;
+            let bestRobot = null;
+            let bestTaskIdx = -1;
+
+            // Each idle AMR bids on every task in the pool
+            for (const rid of idleRobots) {
+                const pos = getAmrPos(rid);
+                for (let t = 0; t < taskPool.length; t++) {
+                    const task = taskPool[t];
+                    const pickupCoord = resolve(task.pickup);
+                    const dist = manhattan({x: pos.col, y: pos.row}, pickupCoord);
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        bestRobot = rid;
+                        bestTaskIdx = t;
+                    }
+                }
+            }
+
+            if (bestRobot === null || bestTaskIdx === -1) return null;
+
+            return { robot: bestRobot, taskIdx: bestTaskIdx, dist: bestDist };
+        }
+
+        // Log bidding details for one auction round
+        async function logAuctionRound(task) {
+            const pickupCoord = resolve(task.pickup);
+            const dropoffCoord = resolve(task.dropoff);
+
+            addAuctionLog(`── Auction for ${task.taskId}: ${task.pickup} → ${task.dropoff} ──`, '#55ff55');
+            await sleep(100);
+
+            // Show each AMR's bid
+            for (const rid of ['amr1','amr2','amr3']) {
+                const k = rid.replace('amr', 'amr_');
+                const pos = getAmrPos(rid);
+                if (robotStatuses[k] !== 'IDLE') {
+                    addAuctionLog(`  ${k.toUpperCase()} bid: BUSY (cannot bid)`, '#ff5555');
+                } else {
+                    const dist = manhattan({x: pos.col, y: pos.row}, pickupCoord);
+                    addAuctionLog(`  ${k.toUpperCase()} bid: ${dist} steps from pickup`, '#60a5fa');
+                }
+            }
+            await sleep(100);
+        }
+
+        // Run the full mission: auction all tasks, assign, execute
+        async function runMission() {
+            if (missionStarted) return;
+            missionStarted = true;
+            completedCount = 0;
+
+            addAuctionLog('══════════════════════════════════════', '#55ff55');
+            addAuctionLog('MISSION START: 10 tasks loaded into the pool', '#55ff55');
+            addAuctionLog('══════════════════════════════════════', '#55ff55');
+            await sleep(300);
+
+            // Show all 10 tasks
+            for (const t of taskPool) {
+                addAuctionLog(`  [POOL] ${t.taskId}: ${t.pickup} → ${t.dropoff}`, '#facc15');
+            }
+            await sleep(500);
+
+            addAuctionLog('', '#333');
+            addAuctionLog('Starting CNP auction for all tasks...', '#55ff55');
+            addAuctionLog('Each IDLE AMR bids on every task. Best match wins.', '#888');
+            await sleep(500);
+
+            // First round: assign tasks to all 3 idle AMRs
+            await assignAvailableRobots();
+        }
+
+        // Try to assign tasks to all currently IDLE robots (with lock to prevent race conditions)
+        let assignLock = false;
+        let assignQueued = false;
+
+        async function assignAvailableRobots() {
+            // If already running, just flag that we need another round
+            if (assignLock) {
+                assignQueued = true;
+                return;
+            }
+            assignLock = true;
+
+            do {
+                assignQueued = false;
+                while (true) {
+                    const match = auctionBestMatch();
+                    if (!match) break;
+
+                    const task = taskPool[match.taskIdx];
+                    taskPool.splice(match.taskIdx, 1);
+
+                    await logAuctionRound(task);
+
+                    const robotName = match.robot.replace('amr', 'amr_');
+                    addAuctionLog(`  ✓ Winner: ${robotName.toUpperCase()} (${match.dist} steps) → assigned ${task.taskId}`, '#55ff55');
+                    addAuctionLog(`  Remaining tasks in pool: ${taskPool.length}`, '#888');
+                    await sleep(200);
+
+                    setRobotStatus(robotName, 'BUSY (NAVIGATING)');
+                    executeTask(match.robot, robotName, task);
+
+                    await sleep(300);
+                }
+            } while (assignQueued);
+
+            assignLock = false;
+
+            if (taskPool.length > 0) {
+                addAuctionLog(`${taskPool.length} tasks waiting — all AMRs busy`, '#ffaa00');
+            }
+        }
+
+        // Execute a single task for one AMR (async, non-blocking)
+        async function executeTask(robotId, robotName, task) {
+            const pickupCoord = resolve(task.pickup);
+            const dropoffCoord = resolve(task.dropoff);
+            const startTime = Date.now();
+
+            // ─── Step 1: Drive to pickup ───
+            addAuctionLog(`${robotName.toUpperCase()} → driving to pickup (${task.pickup})...`, '#60a5fa');
+            const curPos = getAmrPos(robotId);
+            const pickupPath = findAStarPath({x: curPos.col, y: curPos.row}, pickupCoord);
+            if (pickupPath.length > 0) {
+                await animateAMR(pickupPath, robotId);
+            }
+            addAuctionLog(`${robotName.toUpperCase()} arrived at pickup (${task.pickup})`, '#60a5fa');
+
+            // ─── Step 2: Load cargo (2 seconds) ───
+            setRobotStatus(robotName, 'BUSY (LOADING)');
+            addAuctionLog(`${robotName.toUpperCase()} loading cargo... (2s)`, '#facc15');
+            await sleep(2000);
+            addAuctionLog(`${robotName.toUpperCase()} cargo loaded!`, '#facc15');
+
+            // ─── Step 3: Drive to dropoff ───
+            setRobotStatus(robotName, 'BUSY (NAVIGATING)');
+            addAuctionLog(`${robotName.toUpperCase()} → driving to dropoff (${task.dropoff})...`, '#60a5fa');
+            const afterPickup = getAmrPos(robotId);
+            const dropPath = findAStarPath({x: afterPickup.col, y: afterPickup.row}, dropoffCoord);
+            if (dropPath.length > 0) {
+                await animateAMR(dropPath, robotId);
+            }
+            addAuctionLog(`${robotName.toUpperCase()} arrived at dropoff (${task.dropoff})`, '#60a5fa');
+
+            // ─── Step 4: Unload cargo (2 seconds) ───
+            setRobotStatus(robotName, 'BUSY (UNLOADING)');
+            addAuctionLog(`${robotName.toUpperCase()} unloading cargo... (2s)`, '#facc15');
+            await sleep(2000);
+
+            // ─── Step 5: Task complete ───
+            completedCount++;
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            addAuctionLog(`✓ ${robotName.toUpperCase()} completed ${task.taskId} in ${elapsed}s (${completedCount} tasks completed)`, '#55ff55');
+
+            // Show pop-up toast notification
+            showToastNotification(`Task ${task.taskId} completed by ${robotName.toUpperCase()}`);
+
+            // Add to KPI table
+            addKpiRow(task.taskId, robotName, elapsed);
+
+            // 🔋 Battery Reduction: Reduce by 5% per task completed
+            const stdKey = robotName.includes('_') ? robotName : robotName.replace('amr', 'amr_');
+            robotBatteries[stdKey] = Math.max(0, (robotBatteries[stdKey] !== undefined ? robotBatteries[stdKey] : 100) - 5);
+            const batEl = document.getElementById(stdKey + '-bat');
+            if (batEl) batEl.innerText = robotBatteries[stdKey].toFixed(1) + '%';
+            addAuctionLog(`🔋 ${robotName.toUpperCase()} battery level: ${robotBatteries[stdKey]}%`, robotBatteries[stdKey] <= 20 ? '#ffaa00' : '#888888');
+
+            // ⚡ Low Battery Check: If battery <= 10%, return to charging station & recharge for 5 seconds
+            if (robotBatteries[stdKey] <= 10) {
+                addAuctionLog(`⚠️ ${robotName.toUpperCase()} battery low (${robotBatteries[stdKey]}%)! Returning to charging station...`, '#ffaa00');
+                showToastNotification(`⚠️ ${robotName.toUpperCase()} battery low (${robotBatteries[stdKey]}%)! Returning to charge...`, true);
+
+                setRobotStatus(robotName, 'BUSY (RETURNING TO CHARGE)');
+                const posNow = getAmrPos(robotId);
+                const home = STAGING_POSITIONS[robotId];
+                const homePath = findAStarPath({x: posNow.col, y: posNow.row}, {x: home.col, y: home.row});
+                if (homePath.length > 0) {
+                    await animateAMR(homePath, robotId);
+                }
+
+                setRobotStatus(robotName, 'BUSY (CHARGING)');
+                addAuctionLog(`⚡ ${robotName.toUpperCase()} charging at station... (5s pause)`, '#facc15');
+                showToastNotification(`⚡ ${robotName.toUpperCase()} charging at station (5s pause)...`, true);
+                await sleep(5000);
+
+                robotBatteries[stdKey] = 100;
+                if (batEl) batEl.innerText = '100.0%';
+                addAuctionLog(`⚡ ${robotName.toUpperCase()} battery fully recharged to 100%!`, '#55ff55');
+                showToastNotification(`⚡ ${robotName.toUpperCase()} battery fully recharged to 100%!`);
+            }
+
+            // ─── Step 6: Check for more tasks ───
+            if (taskPool.length > 0) {
+                addAuctionLog(`${robotName.toUpperCase()} checking pool for next task...`, '#888');
+                setRobotStatus(robotName, 'IDLE');
+                await sleep(300);
+                await assignAvailableRobots();
+            } else {
+                // No tasks left — go home
+                addAuctionLog(`No tasks left. ${robotName.toUpperCase()} returning to charging station...`, '#ffaa00');
+                setRobotStatus(robotName, 'BUSY (RETURNING)');
+                const posNow = getAmrPos(robotId);
+                const home = STAGING_POSITIONS[robotId];
+                const homePath = findAStarPath({x: posNow.col, y: posNow.row}, {x: home.col, y: home.row});
+                if (homePath.length > 0) {
+                    await animateAMR(homePath, robotId);
+                }
+                addAuctionLog(`${robotName.toUpperCase()} parked at charging station.`, '#55ff55');
+                setRobotStatus(robotName, 'IDLE');
+
+                // Check if ALL robots are done
+                const allIdle = Object.values(robotStatuses).every(s => s === 'IDLE');
+                if (allIdle && taskPool.length === 0) {
+                    addAuctionLog('══════════════════════════════════════', '#55ff55');
+                    addAuctionLog(`MISSION COMPLETE! All ${completedCount} tasks delivered. All AMRs at charging stations.`, '#55ff55');
+                    addAuctionLog('══════════════════════════════════════', '#55ff55');
+                    missionStarted = false;
+                }
+            }
+        }
+
+        function addKpiRow(taskId, robotName, elapsed) {
+            const body = document.getElementById('metricsTableBody');
+            if (!body) return;
+            // Clear placeholder row
+            if (body.querySelector('td[colspan]')) body.innerHTML = '';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${taskId}</td>
+                <td>${robotName}</td>
+                <td>${elapsed}</td>
+                <td>${elapsed}</td>
+                <td>4.0</td>
+            `;
+            body.appendChild(row);
+        }
+
+        // External injection support (from Mission Injector UI)
+        const simulateCNPAuction = (pickupInput, dropoffInput) => {
+            const taskId = `task_${Date.now().toString().slice(-4)}`;
+            taskPool.push({ taskId, pickup: pickupInput, dropoff: dropoffInput });
+            if (!missionStarted) {
+                missionStarted = true;
+                addAuctionLog(`New task injected: ${taskId}`, '#55ff55');
+                assignAvailableRobots();
+            } else {
+                addAuctionLog(`New task added to pool: ${taskId}`, '#55ff55');
+                assignAvailableRobots();
+            }
+        };
+        window.simulateCNPAuction = simulateCNPAuction;
+
+        // ════════════════════════════════════════════
+        // 8. Map Expand/Collapse
+        // ════════════════════════════════════════════
+        let isExpanded = false;
+        function toggleMapExpand() {
+            isExpanded = !isExpanded;
+            const cp = document.getElementById('canvasPanel');
+            const btn = document.getElementById('expandMapBtn');
+            if (isExpanded) {
+                cp.style.position = 'fixed'; cp.style.inset = '0'; cp.style.zIndex = '9999';
+                cp.style.backgroundColor = '#000'; cp.style.padding = '24px';
+                btn.innerText = '[-] COLLAPSE';
+            } else {
+                cp.style.position = 'relative'; cp.style.inset = 'auto'; cp.style.zIndex = 'auto';
+                cp.style.backgroundColor = 'transparent'; cp.style.padding = '8px';
+                btn.innerText = '[+] EXPAND';
+            }
+        }
+
+        // ════════════════════════════════════════════
+        // 9. SSE rendering (telemetry only — auction log is driven by JS)
+        // ════════════════════════════════════════════
         function updateAmrGridPositions(telemetry) {
-            const robotMap = {
-                'amr_1': 'amr-cell-1',
-                'amr_2': 'amr-cell-2',
-                'amr_3': 'amr-cell-3'
-            };
-
-            for (const rid in robotMap) {
-                const cellId = robotMap[rid];
-                const cellEl = document.getElementById(cellId);
-                if (!cellEl) continue;
-
-                const data = telemetry[rid];
-                if (data && data.x !== undefined && data.y !== undefined) {
-                    // Map 0..15m x to col 1..9 (with 1 offset boundary)
-                    let col = Math.min(Math.max(Math.round((data.x / 15.0) * 8) + 1, 1), 9);
-                    // Map 0..15m y to row 12..1 (invert y for screen coords)
-                    let row = Math.min(Math.max(12 - Math.round((data.y / 15.0) * 11), 1), 12);
-
-                    cellEl.style.gridColumn = col.toString();
-                    cellEl.style.gridRow = row.toString();
-
-                    // Optional halt indicator styling
-                    const icon = cellEl.querySelector('div');
+            const map = { 'amr_1': 'amr-cell-1', 'amr_2': 'amr-cell-2', 'amr_3': 'amr-cell-3' };
+            for (const rid in map) {
+                const nid = rid.replace('_', '');
+                if (activeAnimatingRobots.has(nid) || activeAnimatingRobots.has(rid)) continue;
+                const el = document.getElementById(map[rid]);
+                if (!el) continue;
+                const d = telemetry[rid];
+                if (d && d.x !== undefined && d.y !== undefined) {
+                    let col = Math.min(Math.max(Math.round((d.x / 15.0) * 8) + 1, 1), 9);
+                    let row = Math.min(Math.max(12 - Math.round((d.y / 15.0) * 11), 1), 12);
+                    setAmrPos(nid, { col, row });
+                    const icon = el.querySelector('div');
                     if (icon) {
-                        icon.style.backgroundColor = data.is_halted ? '#ef4444' : '#3b82f6';
-                        icon.style.borderColor = data.is_halted ? '#ffaa00' : '#ffffff';
+                        icon.style.backgroundColor = d.is_halted ? '#ef4444' : '#3b82f6';
+                        icon.style.borderColor = d.is_halted ? '#ffaa00' : '#ffffff';
                     }
                 }
             }
         }
 
-        // ════════════════════════════════════════════
-        // SSE data rendering
-        // ════════════════════════════════════════════
+        let processedTasks = new Set();
+
         function renderState(snapshot) {
             if (!snapshot) return;
-
-            // Telemetry
             const telemetry = snapshot.telemetry || {};
             for (const rid in telemetry) {
                 const d = telemetry[rid];
-
                 const el = (sfx) => document.getElementById(rid + '-' + sfx);
-                if (el('x')) el('x').innerText = (d.x || 0).toFixed(2);
-                if (el('y')) el('y').innerText = (d.y || 0).toFixed(2);
-                if (el('bat')) el('bat').innerText = (d.battery_pct || 100).toFixed(1) + '%';
+                // Don't overwrite our JS-driven coordinates if animating
+                const nid = rid.replace('_', '');
+                if (!activeAnimatingRobots.has(nid) && !activeAnimatingRobots.has(rid)) {
+                    // Only update telemetry display from SSE if not animating
+                }
+                if (el('bat')) {
+                    const batVal = robotBatteries[rid] !== undefined ? robotBatteries[rid] : (d.battery_pct || 100);
+                    el('bat').innerText = batVal.toFixed(1) + '%';
+                }
                 if (el('wait')) el('wait').innerText = (d.wait_duration_sec || 0).toFixed(1) + 's';
                 if (el('halt')) {
                     el('halt').innerText = d.is_halted ? 'YES' : 'NO';
@@ -426,54 +914,19 @@
                 }
             }
 
-            updateAmrGridPositions(telemetry);
-
-            // Task status
-            const taskStatus = snapshot.task_status || {};
-            for (const rid in taskStatus) {
-                const s = document.getElementById(rid + '-status');
-                if (s) s.innerText = taskStatus[rid] || 'IDLE';
-            }
-
-            // Auction logs
+            // Handle injected tasks from Mission Injector API
             const auctions = snapshot.auctions || [];
-            const container = document.getElementById('auctionLogContainer');
-            if (auctions.length > 0) {
-                container.innerHTML = '';
-                auctions.forEach(data => {
-                    const entry = document.createElement('div');
-                    entry.className = 'log-entry';
-                    const ts = new Date().toISOString().split('T')[1].slice(0, 8);
-                    const mt = data.msg_type || 'INFO';
-                    const sender = data.initiator_id || data.bidder_id || data.winner_id || 'SWARM';
-                    entry.innerText = `[${ts}] [CNP:${mt}] ${sender} -> ${data.auction_id || ''} ${JSON.stringify(data)}`;
-                    container.appendChild(entry);
-                });
-                container.scrollTop = container.scrollHeight;
-            }
-
-            // Mission metrics
-            const metrics = snapshot.metrics || [];
-            const body = document.getElementById('metricsTableBody');
-            if (metrics.length > 0) {
-                body.innerHTML = '';
-                metrics.forEach(data => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${data.task_id || 'N/A'}</td>
-                        <td>${data.robot_id || 'N/A'}</td>
-                        <td>${(data.order_to_delivery_latency_sec || 0).toFixed(2)}</td>
-                        <td>${(data.active_travel_time_sec || 0).toFixed(2)}</td>
-                        <td>${(data.idle_wait_time_sec || 0).toFixed(2)}</td>
-                    `;
-                    body.appendChild(row);
-                });
-            }
+            auctions.forEach(data => {
+                const mt = data.msg_type || '';
+                if (mt === 'AVAILABLE' && data.auction_id && !processedTasks.has(data.auction_id)) {
+                    processedTasks.add(data.auction_id);
+                    if (data.pickup && data.drop) {
+                        simulateCNPAuction(data.pickup, data.drop);
+                    }
+                }
+            });
         }
 
-        // ════════════════════════════════════════════
-        // SSE connection
-        // ════════════════════════════════════════════
         const evtSource = new EventSource("/stream");
         evtSource.onmessage = function(event) {
             try { renderState(JSON.parse(event.data)); }
@@ -484,6 +937,18 @@
             .then(r => r.json())
             .then(d => renderState(d))
             .catch(e => console.log('API fetch error:', e));
+
+        // ════════════════════════════════════════════
+        // 10. SYSTEM INITIALIZATION
+        // ════════════════════════════════════════════
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set initial AMR positions
+            setAmrPos('amr1', { col: 6, row: 2 });
+            setAmrPos('amr2', { col: 7, row: 2 });
+            setAmrPos('amr3', { col: 8, row: 2 });
+
+            addAuctionLog('System online. Ready for task injection from Mission Injector UI.', '#55ff55');
+        });
     </script>
 </body>
 </html>
