@@ -15,7 +15,7 @@ const BAYS = [
   'r3b_bay_0', 'r3b_bay_1', 'r3b_bay_2', 'r3b_bay_3', 'r3b_bay_4'
 ];
 
-export default function MissionInjector({ onPassScript }) {
+export default function MissionInjector({ onPassScript, tourStep }) {
   const [selectedFrom, setSelectedFrom] = useState(null);
   const [step, setStep] = useState('SELECT_FROM');
   const [queuedTasks, setQueuedTasks] = useState([]);
@@ -53,14 +53,27 @@ export default function MissionInjector({ onPassScript }) {
   };
 
   const handlePassScript = () => {
+    if (queuedTasks.length === 0) return;
+
+    queuedTasks.forEach((t) => {
+      fetch('/api/inject_task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_id: t.id, pickup: t.pickup, drop: t.drop })
+      }).catch((err) => console.error('Task injection error:', err));
+    });
+
     const fullScript = queuedTasks.map((t) => t.command).join('\n');
-    if (onPassScript) {
-      onPassScript(fullScript, queuedTasks);
-    } else {
-      navigator.clipboard?.writeText(fullScript);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    navigator.clipboard?.writeText(fullScript);
+    setCopied(true);
+
+    setTimeout(() => {
+      if (onPassScript) {
+        onPassScript(fullScript, queuedTasks);
+      } else {
+        window.location.href = '/';
+      }
+    }, 500);
   };
 
   return (
@@ -86,7 +99,9 @@ export default function MissionInjector({ onPassScript }) {
         {/* LEFT COLUMN: 'From' Grid */}
         <div
           className={`md:col-span-4 bg-neutral-950 border p-4 flex flex-col ${
-            step === 'SELECT_FROM'
+            tourStep === 6
+              ? 'relative z-50 ring-2 ring-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)] border-green-500 opacity-100 pointer-events-auto'
+              : step === 'SELECT_FROM'
               ? 'border-neutral-500'
               : 'border-neutral-900 opacity-40 pointer-events-none'
           }`}
@@ -136,7 +151,9 @@ export default function MissionInjector({ onPassScript }) {
         {/* MIDDLE COLUMN: 'To' Grid */}
         <div
           className={`md:col-span-3 bg-neutral-950 border p-4 flex flex-col ${
-            step === 'SELECT_TO'
+            tourStep === 7
+              ? 'relative z-50 ring-2 ring-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)] border-green-500 opacity-100 pointer-events-auto'
+              : step === 'SELECT_TO'
               ? 'border-neutral-500'
               : 'border-neutral-900 opacity-40 pointer-events-none'
           }`}
@@ -171,7 +188,13 @@ export default function MissionInjector({ onPassScript }) {
         </div>
 
         {/* RIGHT COLUMN: Task Script Log */}
-        <div className="md:col-span-5 bg-neutral-950 border border-neutral-800 p-4 flex flex-col justify-between">
+        <div
+          className={`md:col-span-5 bg-neutral-950 border p-4 flex flex-col justify-between ${
+            tourStep === 8
+              ? 'relative z-50 ring-2 ring-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)] border-green-500'
+              : 'border-neutral-800'
+          }`}
+        >
           <div>
             <div className="flex justify-between items-center border-b border-neutral-800 pb-2 mb-3">
               <span className="text-xs font-bold uppercase text-white">

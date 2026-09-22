@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "navibots",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/injector",
+        "destination": "/injector.html"
+      }
+    ]
+  }
+}
